@@ -3,10 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Arcade — Interactive Mastery Games</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600;700&family=Fira+Sans:wght@400;500;600;700&family=STIX+Two+Text:wght@600;700&display=swap" rel="stylesheet" />
+  <title>Arcade &amp; Capstone — Interactive Mastery Games</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
@@ -43,23 +40,24 @@
   </header>
 
   <main id="mainContent" class="page-wrap" tabindex="-1">
-    <h1>Mastery Arcade</h1>
-    <p class="muted">Sharpen your intuition with bite-sized games. Every correct answer builds your streak and earns XP.</p>
+    <h1>Mastery Arcade &amp; Capstone Exam</h1>
+    <p class="muted">Build your combo multiplier (<code>2x</code> → <code>3x</code> → <code>5x</code> XP) across 5 game modes and pass the 3-step <strong>Zero-to-Hero Capstone Diagnostic</strong>.</p>
 
     <div class="pack-tabs" role="tablist" aria-label="Mini-games">
-      <button class="btn btn-sm g-tab" type="button" data-g="blank" aria-pressed="true">1. Complete Sentence / Code</button>
+      <button class="btn btn-sm g-tab" type="button" data-g="blank" aria-pressed="true">1. Complete Code / Formula</button>
       <button class="btn btn-sm g-tab" type="button" data-g="match" aria-pressed="false">2. Link Concepts</button>
-      <button class="btn btn-sm g-tab" type="button" data-g="flaw" aria-pressed="false">3. Spot the Flaw</button>
+      <button class="btn btn-sm g-tab" type="button" data-g="order" aria-pressed="false">3. Order the Pipeline</button>
+      <button class="btn btn-sm g-tab" type="button" data-g="flaw" aria-pressed="false">4. Spot the Flaw</button>
+      <button class="btn btn-sm g-tab" type="button" data-g="blitz" aria-pressed="false">5. 60s Blitz</button>
+      <button class="btn btn-sm btn-gold g-tab" type="button" data-g="capstone" aria-pressed="false">★ Capstone Exam</button>
     </div>
 
-    <!-- Game 1: Complete the Sentence / Code -->
     <section id="gameBlank" class="surface"></section>
-
-    <!-- Game 2: Link Concepts -->
     <section id="gameMatch" class="surface" hidden></section>
-
-    <!-- Game 3: Spot the Engineering Flaw -->
+    <section id="gameOrder" class="surface" hidden></section>
     <section id="gameFlaw" class="surface" hidden></section>
+    <section id="gameBlitz" class="surface" hidden></section>
+    <section id="gameCapstone" class="surface" hidden></section>
   </main>
 
   <nav class="mobile-bottom-nav" aria-label="Mobile navigation">
@@ -89,22 +87,31 @@
   <script src="shared.js"></script>
   <script>
     (function () {
-      const DATA = window.NOTEBOOK_DATA.arcade;
+      const FULL = window.NOTEBOOK_DATA;
+      const DATA = FULL.arcade;
       const State = window.NotebookState;
 
-      // Tab switcher
       const panes = {
         blank: document.getElementById("gameBlank"),
         match: document.getElementById("gameMatch"),
-        flaw: document.getElementById("gameFlaw")
+        order: document.getElementById("gameOrder"),
+        flaw: document.getElementById("gameFlaw"),
+        blitz: document.getElementById("gameBlitz"),
+        capstone: document.getElementById("gameCapstone")
       };
+
+      function activateGameTab(g) {
+        State.playSound("tap");
+        document.querySelectorAll(".g-tab").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.g === g)));
+        Object.entries(panes).forEach(([k, el]) => { el.hidden = k !== g; });
+      }
+
       document.querySelectorAll(".g-tab").forEach((btn) => {
-        btn.addEventListener("click", () => {
-          const g = btn.dataset.g;
-          document.querySelectorAll(".g-tab").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.g === g)));
-          Object.entries(panes).forEach(([k, el]) => { el.hidden = k !== g; });
-        });
+        btn.addEventListener("click", () => activateGameTab(btn.dataset.g));
       });
+
+      const urlTab = new URLSearchParams(window.location.search).get("tab");
+      if (urlTab && panes[urlTab]) activateGameTab(urlTab);
 
       // --- Game 1: Complete the Sentence / Code ---
       let bIdx = 0;
@@ -134,7 +141,7 @@
             fb.textContent = (ok ? "Correct! " : `Not quite (answer: ${item.blank}). `) + item.explain;
             ch.classList.add(ok ? "matched" : "wrong");
             if (ok) State.awardXP(15, "Fill-in-Blank");
-            else State.resetStreak();
+            else State.resetStreak({ q: `${item.prompt} _____ ${item.after}`, options: item.choices, answer: item.choices.indexOf(item.blank), explain: item.explain });
           });
         });
         document.getElementById("nextBlankBtn").addEventListener("click", () => {
@@ -211,7 +218,55 @@
       }
       renderMatch();
 
-      // --- Game 3: Spot the Flaw ---
+      // --- Game 3: Order the Pipeline ---
+      let oIdx = 0;
+      function renderOrder() {
+        const pipes = FULL.orderPipelines || [];
+        const p = pipes[oIdx];
+        const scrambled = p.steps.map((text, idx) => ({ text, idx })).sort(() => Math.random() - 0.5);
+        let expected = 0;
+
+        panes.order.innerHTML = `
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+            <span class="tag tag-purple">Pipeline ${oIdx + 1} / ${pipes.length}</span>
+            <button id="nextOrderBtn" class="btn btn-sm" type="button">Switch Pipeline →</button>
+          </div>
+          <h2 style="font-size:20px; margin-bottom:6px;">${p.title}</h2>
+          <p class="muted" style="font-size:14px;">Tap the steps below in exact execution order (Step 1 → Step ${p.steps.length}):</p>
+          <div class="quiz-options" id="orderList">
+            ${scrambled.map((s) => `<button class="quiz-opt ord-btn" type="button" data-idx="${s.idx}">${s.text}</button>`).join("")}
+          </div>
+          <div id="orderFb" class="note-box good" hidden>${p.explain}</div>
+        `;
+
+        panes.order.querySelectorAll(".ord-btn").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            const idx = parseInt(btn.dataset.idx, 10);
+            if (idx === expected) {
+              btn.classList.add("correct");
+              btn.disabled = true;
+              expected++;
+              State.awardXP(10, "Pipeline Step");
+              if (expected === p.steps.length) {
+                document.getElementById("orderFb").hidden = false;
+                State.awardXP(25, "Pipeline Ordered");
+              }
+            } else {
+              btn.classList.add("wrong");
+              State.resetStreak();
+              setTimeout(() => btn.classList.remove("wrong"), 450);
+            }
+          });
+        });
+
+        document.getElementById("nextOrderBtn").addEventListener("click", () => {
+          oIdx = (oIdx + 1) % pipes.length;
+          renderOrder();
+        });
+      }
+      renderOrder();
+
+      // --- Game 4: Spot the Flaw ---
       let fIdx = 0;
       function renderFlaw() {
         const item = DATA.spotFlaws[fIdx];
@@ -239,7 +294,7 @@
             fb.hidden = false;
             fb.textContent = item.explain;
             if (pick === item.answer) State.awardXP(20, "Reviewer Catch");
-            else State.resetStreak();
+            else State.resetStreak({ q: item.scenario, options: item.options, answer: item.answer, explain: item.explain });
           });
         });
         document.getElementById("nextFlawBtn").addEventListener("click", () => {
@@ -248,6 +303,122 @@
         });
       }
       renderFlaw();
+
+      // --- Game 5: 60-Second Blitz ---
+      const allPool = [];
+      FULL.concepts.forEach((c) => c.trivia.forEach((t) => allPool.push(t)));
+      DATA.spotFlaws.forEach((f) => allPool.push({ q: f.scenario, options: f.options, answer: f.answer, explain: f.explain }));
+      let blitzTimer = null, blitzSec = 60, blitzScore = 0;
+
+      function renderBlitzIdle() {
+        clearInterval(blitzTimer);
+        panes.blitz.innerHTML = `
+          <h2 style="margin-top:0;">60-Second Speed Blitz</h2>
+          <p class="muted">Answer as many rapid-fire questions as you can in 60 seconds to build a 5x Combo Multiplier!</p>
+          <button id="startBlitzBtn" class="btn btn-primary" type="button">Start 60s Blitz →</button>
+        `;
+        document.getElementById("startBlitzBtn").addEventListener("click", () => {
+          blitzSec = 60;
+          blitzScore = 0;
+          nextBlitzQuestion();
+          blitzTimer = setInterval(() => {
+            blitzSec--;
+            const tEl = document.getElementById("blitzClock");
+            if (tEl) tEl.textContent = `${blitzSec}s`;
+            if (blitzSec <= 0) {
+              clearInterval(blitzTimer);
+              panes.blitz.innerHTML = `
+                <h2>Time's Up! Blitz Score: ${blitzScore} Correct</h2>
+                <button id="retryBlitzBtn" class="btn btn-primary" type="button">Play Again</button>
+              `;
+              document.getElementById("retryBlitzBtn").addEventListener("click", renderBlitzIdle);
+            }
+          }, 1000);
+        });
+      }
+
+      function nextBlitzQuestion() {
+        const q = allPool[Math.floor(Math.random() * allPool.length)];
+        panes.blitz.innerHTML = `
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+            <span class="tag tag-gold" id="blitzClock">${blitzSec}s</span>
+            <span class="tag tag-green">Blitz Score: ${blitzScore}</span>
+          </div>
+          <p style="font-weight:600; font-size:16px;">${q.q}</p>
+          <div class="quiz-options">
+            ${q.options.map((o, i) => `<button class="quiz-opt bl-opt" type="button" data-i="${i}">${o}</button>`).join("")}
+          </div>
+        `;
+        panes.blitz.querySelectorAll(".bl-opt").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            const pick = parseInt(btn.dataset.i, 10);
+            if (pick === q.answer) {
+              blitzScore++;
+              State.awardXP(15, "Blitz");
+            } else {
+              State.resetStreak(q);
+            }
+            nextBlitzQuestion();
+          });
+        });
+      }
+      renderBlitzIdle();
+
+      // --- Capstone Challenge (Final Boss) ---
+      function renderCapstone() {
+        const cap = FULL.capstoneChallenge;
+        let passed = new Array(cap.steps.length).fill(false);
+        panes.capstone.innerHTML = `
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:10px;">
+            <h2 style="margin:0;">${cap.title}</h2>
+            <span class="tag tag-gold">Grandmaster Certification (+100 XP)</span>
+          </div>
+          <div class="note-box warn">${cap.scenario}</div>
+          ${cap.steps.map((s, si) => `
+            <div class="surface-lab" data-csi="${si}">
+              <h3>${s.stepTitle}</h3>
+              <p style="font-weight:600;">${s.q}</p>
+              <div class="quiz-options">
+                ${s.options.map((o, oi) => `<button class="quiz-opt cap-opt" type="button" data-oi="${oi}">${o}</button>`).join("")}
+              </div>
+              <p class="muted cap-fb" style="margin:10px 0 0; font-size:13.5px;" hidden></p>
+            </div>
+          `).join("")}
+          <div id="capDoneBanner" class="note-box good" hidden>
+            <strong>★ Capstone Diagnostic Cleared! (+100 XP)</strong> You demonstrated full end-to-end mastery of causal preprocessing, multi-actuator decoupling, and anti-inverse-crime validation.
+          </div>
+        `;
+
+        panes.capstone.querySelectorAll(".cap-opt").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            const box = btn.closest("[data-csi]");
+            const si = parseInt(box.dataset.csi, 10);
+            const oi = parseInt(btn.dataset.oi, 10);
+            const step = cap.steps[si];
+            const fb = box.querySelector(".cap-fb");
+
+            box.querySelectorAll(".cap-opt").forEach((b, idx) => {
+              b.classList.remove("correct", "wrong");
+              if (idx === step.answer) b.classList.add("correct");
+              else if (idx === oi) b.classList.add("wrong");
+            });
+            fb.hidden = false;
+            fb.textContent = step.explain;
+
+            if (oi === step.answer) {
+              if (!passed[si]) State.awardXP(25, `Capstone Step ${si + 1}`);
+              passed[si] = true;
+              if (passed.every(Boolean)) {
+                State.completeCapstone();
+                document.getElementById("capDoneBanner").hidden = false;
+              }
+            } else {
+              State.resetStreak(step);
+            }
+          });
+        });
+      }
+      renderCapstone();
     })();
   </script>
 </body>

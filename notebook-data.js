@@ -616,5 +616,99 @@ window.NOTEBOOK_DATA = {
     { path: "results/phase1_audit_metrics.json", role: "Verified group delays, latencies, and causality leak measurements." },
     { path: "results/phase1_extraction_summary.json", role: "Full-cohort archive sizes and window counts (153,600/montage)." },
     { path: "tests/", role: "18 deterministic unit tests (95% coverage, 0.0 lookahead proof)." }
-  ]
+  ],
+
+  labMissions: {
+    "circumplex": [
+      { id: "m1", prompt: "Mission 1: Target Calm (+0.75, -0.60) and UNCHECK Lighting + Haptics to expose the Tempo–Valence Crossover.", xp: 25 },
+      { id: "m2", prompt: "Mission 2: Re-enable Lighting + Haptics in Q4 (V* > 0.4, A* < -0.3) to restore Valence tracking.", xp: 25 }
+    ],
+    "montage": [
+      { id: "m1", prompt: "Mission 1: Switch to wearable_4 (29 features, 0.822 ms/step) to inspect the minimal headband.", xp: 25 },
+      { id: "m2", prompt: "Mission 2: Tap electrode F4 on the SVG head map to inspect its Geneva BioSemi index (19).", xp: 25 }
+    ],
+    "causality": [
+      { id: "m1", prompt: "Mission 1: Select Acausal filtfilt to reveal the 27.60 log-power backward leakage before sample 1024.", xp: 25 },
+      { id: "m2", prompt: "Mission 2: Select Compare Both to contrast zero-leakage Causal SOS against filtfilt.", xp: 25 }
+    ],
+    "eeg-bands": [
+      { id: "m1", prompt: "Mission 1: Set F4 and F3 sliders so FAA (F4 - F3) exceeds +1.00 (Strong Positive / Approach bias).", xp: 25 },
+      { id: "m2", prompt: "Mission 2: Invert the sliders so FAA drops below -0.80 (Withdrawal / Negative bias).", xp: 25 }
+    ],
+    "gsr-parallel": [
+      { id: "m1", prompt: "Mission 1: Switch to Naive Subtract to observe the fake negative phase-mismatch artifact (4.86 s delay).", xp: 25 },
+      { id: "m2", prompt: "Mission 2: Return to Parallel SCR to verify the clean 331.98 ms phasic response.", xp: 25 }
+    ],
+    "timeline": [
+      { id: "m1", prompt: "Mission 1: Scrub to Baseline Fixation (t < 3.0 s) where P_base is calibrated.", xp: 25 },
+      { id: "m2", prompt: "Mission 2: Scrub past t = 33.0 s so the 30 s BVP buffer switches ω_BVP from 0.1 to 1.0.", xp: 25 }
+    ],
+    "kalman-preview": [
+      { id: "m1", prompt: "Mission 1: Enable Simulate EEG Dropout (t = 20–40 s) to test observer resilience.", xp: 25 },
+      { id: "m2", prompt: "Mission 2: Increase Model Trust (1/Q >= 8) during dropout to smooth the state estimate.", xp: 25 }
+    ]
+  },
+
+  orderPipelines: [
+    {
+      title: "Real-Time 0.5 s Causal Feature Extraction Loop",
+      steps: [
+        "1. Calibrate baseline stats (μ_base, σ_base) strictly on fixation epoch (0–3 s, samples 0:384).",
+        "2. Step forward Δt = 0.5 s (64 samples @ 128 Hz) using causal sosfilt with persistent state zi.",
+        "3. Extract 2 s EEG log-bandpowers (135/27/18 D), 30 s parallel GSR SCL/SCR (5 D), and 30 s BVP HRV + ω_BVP (6 D).",
+        "4. Fuse features in the Kalman observer & compute constrained 3-actuator control u_k (Music + Light + Haptics)."
+      ],
+      explain: "Every step respects strict temporal causality (0.0 lookahead leakage) and finishes in < 1.55 ms."
+    },
+    {
+      title: "Authoritative DEAP Label & Montage Verification",
+      steps: [
+        "1. Verify SHA-256 checksums of all 32 raw s01.dat–s32.dat files (read-only).",
+        "2. Restore 439 inverted Quadrant-1 valence/arousal ratings from participant_ratings.xls.",
+        "3. Map EEG channels using the Geneva 10–20 sequence (avoiding MNE biosemi32 30/32 channel scrambling).",
+        "4. Export 153,600 verified control steps per montage with 0 NaN/Inf values."
+      ],
+      explain: "Restoring Q1 labels and using the Geneva channel order prevents fatal data corruption before Phase 2."
+    }
+  ],
+
+  capstoneChallenge: {
+    title: "Zero-to-Hero Capstone Diagnostic: Designing a Real-Time Calm Controller",
+    scenario: "A wearable headband user enters a high-arousal stressed state (V = -0.60, A = +0.75) and wants to reach Calm (V* = +0.75, A* = -0.60). Walk through all 3 engineering decisions without committing an inverse crime:",
+    steps: [
+      {
+        stepTitle: "Step 1 of 3 — Sensor & DSP Integrity (Phase 1)",
+        q: "At t = 4.5 s (1.5 s into the stimulus), the user blinks heavily and the 30 s BVP buffer only has 1 beat. How does our causal pipeline handle this?",
+        options: [
+          "Run scipy.signal.filtfilt across the whole 63 s trial and drop the trial if BVP has < 2 beats.",
+          "Filter forward-only with CausalSOSFilter (0.0 leak) and emit neutral BVP features with confidence weight ω_BVP = 0.1.",
+          "Interpolate future BVP peaks from t = 35 s backward to t = 4.5 s."
+        ],
+        answer: 1,
+        explain: "CausalSOSFilter preserves 0.0 lookahead leakage, and ω_BVP = 0.1 informs the Kalman observer that the 30 s HRV buffer is still in cold start (4,070/153,600 windows)."
+      },
+      {
+        stepTitle: "Step 2 of 3 — Overcoming the Tempo–Valence Crossover (Phase 3)",
+        q: "To move from Stressed (-0.60, +0.75) to Calm (+0.75, -0.60), we slow the music tempo to reduce arousal. According to Agres et al. (2023/2025), what risk arises and how do we solve it?",
+        options: [
+          "Slowing music causes the Tempo–Valence Crossover (music sounds sadder, dropping Valence); we counter this by coordinating green/warm ambient lighting (Li 2025) and slow ~50–60 bpm wrist haptics (Azevedo 2017).",
+          "Slowing music increases arousal; we fix it by turning off all actuators.",
+          "Music alone independently decouples Valence and Arousal with zero cross-coupling."
+        ],
+        answer: 0,
+        explain: "Coordinating Music + Lighting + Heartbeat Haptics makes the input matrix B_act full-rank in 2D Valence–Arousal space, preventing the Valence drop in Quadrant 4."
+      },
+      {
+        stepTitle: "Step 3 of 3 — Anti-Inverse-Crime Benchmarking (Phase 4)",
+        q: "When benchmarking Constrained MPC against LQR and RL in simulation, what must we include so reviewers accept the validation?",
+        options: [
+          "Test the controller on the exact noiseless A, B, C matrices used to fit it, and report only the single best run.",
+          "Inject plant–model parameter mismatch (ΔA, ΔB), affective priming carry-over disturbances, and temporary EEG channel dropouts across N virtual subjects with fixed random seeds (reporting mean ± SD and median [IQR]).",
+          "Modify raw DEAP .dat files until the controller achieves 100% accuracy."
+        ],
+        answer: 1,
+        explain: "Rule 3 (Anti-Inverse Crime) requires testing under parameter mismatch, unmodeled dynamics, and sensor dropouts with full cohort distributions."
+      }
+    ]
+  }
 };

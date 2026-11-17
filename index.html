@@ -3,10 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>2D Affective Control — Learning Hub</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600;700&family=Fira+Sans:wght@400;500;600;700&family=STIX+Two+Text:wght@600;700&display=swap" rel="stylesheet" />
+  <title>2D Affective Control — Zero-to-Hero Learning Hub</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
@@ -48,12 +45,12 @@
       <div>
         <h1>Master Closed-Loop 2D Emotion Control</h1>
         <p class="muted">
-          A beginner-friendly, interactive companion to our Master's thesis &amp; Elsevier <em>BSPC</em> research. Explore the math, play with live signal-processing labs, connect concepts on the knowledge graph, and level up through mini-games.
+          A Zero-to-Hero interactive learning platform for our Master's thesis &amp; Elsevier <em>BSPC</em> research. Switch between <strong>3 Depth Tiers</strong> (Intuition → Practitioner → Formal Math &amp; Code), clear <strong>Lab Missions</strong>, and conquer the <strong>Capstone Exam</strong>.
         </p>
         <div style="display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px;">
-          <a class="btn btn-primary" href="learn.html">Start Learning Packs</a>
-          <a class="btn btn-gold" href="games.html">Play Mastery Arcade</a>
-          <a class="btn" href="map.html">Explore Knowledge Map</a>
+          <a class="btn btn-primary" href="learn.html">Open Concept Studio</a>
+          <a class="btn btn-gold" href="games.html">Mastery Arcade &amp; Capstone</a>
+          <a class="btn" href="map.html">Knowledge Map</a>
         </div>
       </div>
 
@@ -65,22 +62,30 @@
       </div>
     </section>
 
-    <!-- Mastery Progress & Verified Project Status -->
+    <!-- Mastery Progress & Spaced-Repetition Review Queue -->
     <section class="surface">
       <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 14px;">
-        <h2 style="margin: 0;">Your Mastery Progress</h2>
-        <span class="tag tag-green" id="masteryCountBadge">0 / 10 Concepts Mastered</span>
+        <h2 style="margin: 0;">Your Zero-to-Hero Mission Control</h2>
+        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+          <span class="tag tag-green" id="masteryCountBadge">0 / 10 Concepts Mastered</span>
+          <span class="tag tag-gold" id="missionCountBadge">0 / 14 Lab Missions</span>
+        </div>
       </div>
       <div class="grid-3">
-        <div class="readout-cell">Research Phase<strong>Phase 1 Complete</strong></div>
+        <div class="readout-cell">Current Rank<strong id="homeRankVal">Novice</strong></div>
         <div class="readout-cell">DEAP Valid Windows<strong>153,600 steps (0.5 s)</strong></div>
         <div class="readout-cell">Causality &amp; Tests<strong>0.0 Leak · 18/18 Pass</strong></div>
+      </div>
+
+      <div class="grid-2" style="margin-top: 16px;">
+        <div class="note-box" id="weakReviewCard" style="margin:0;"></div>
+        <div class="note-box warn" id="capstoneHomeCard" style="margin:0;"></div>
       </div>
     </section>
 
     <!-- Concept Jump Grid -->
     <h2>All 10 Concept Mastery Packs</h2>
-    <p class="muted">Every concept includes a plain-English + math <strong>Theory</strong> sheet, an <strong>Interactive Lab</strong>, and <strong>Trivia</strong> for +30 XP.</p>
+    <p class="muted">Every concept includes a <strong>3-Tier Depth Switcher</strong>, an <strong>Interactive Lab with 2 Missions</strong> (+50 XP), and a <strong>Mastery Check</strong> (+30 XP).</p>
     <div id="homeConceptGrid" class="grid-2"></div>
   </main>
 
@@ -112,30 +117,82 @@
   <script>
     (function () {
       const DATA = window.NOTEBOOK_DATA;
-      const st = window.NotebookState.get();
-      document.getElementById("masteryCountBadge").textContent =
-        `${st.mastered.length} / ${DATA.concepts.length} Concepts Mastered`;
+      const State = window.NotebookState;
 
-      document.getElementById("homeConceptGrid").innerHTML = DATA.concepts.map((c) => {
-        const done = st.mastered.includes(c.id);
-        return `
-          <div class="surface" style="margin-bottom:0; display:flex; flex-direction:column; justify-content:space-between; gap:12px;">
-            <div>
-              <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; margin-bottom:8px;">
-                <span class="tag ${done ? "tag-green" : "tag-blue"}">${done ? "Mastered" : c.tag}</span>
-                <span class="muted" style="font-size:12px; font-family:var(--font-mono);">${c.phase}</span>
-              </div>
-              <h3>${c.title}</h3>
-              <p class="muted" style="font-size:14px; margin:0;">${c.summary}</p>
+      function renderHomeDashboard() {
+        const st = State.get();
+        document.getElementById("masteryCountBadge").textContent =
+          `${st.mastered.length} / ${DATA.concepts.length} Concepts Mastered`;
+        document.getElementById("missionCountBadge").textContent =
+          `${(st.labMissionsCleared || []).length} Lab Missions Cleared`;
+        document.getElementById("homeRankVal").textContent = State.getRank();
+
+        const missed = st.missedQuestions || [];
+        const revEl = document.getElementById("weakReviewCard");
+        if (missed.length === 0) {
+          revEl.innerHTML = `
+            <strong>Spaced-Repetition Queue: 0 Weak Spots</strong>
+            <p class="muted" style="font-size:13.5px; margin:6px 0 0;">Any question you miss in Learn or Arcade automatically queues here for a 3-minute targeted review.</p>
+          `;
+        } else {
+          const item = missed[0];
+          revEl.innerHTML = `
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <strong>Quick 3-Min Review (${missed.length} queued)</strong>
+              <span class="tag tag-coral">+15 XP</span>
             </div>
-            <a class="btn btn-sm" href="learn.html?concept=${c.id}">Open Theory + Lab + Trivia</a>
-          </div>`;
-      }).join("");
+            <p style="font-size:14px; margin:8px 0;">${item.q}</p>
+            <div class="quiz-options">
+              ${item.options.map((o, idx) => `<button class="quiz-opt rev-opt" type="button" data-i="${idx}">${o}</button>`).join("")}
+            </div>
+          `;
+          revEl.querySelectorAll(".rev-opt").forEach((btn) => {
+            btn.addEventListener("click", () => {
+              const pick = parseInt(btn.dataset.i, 10);
+              if (pick === item.answer) {
+                State.clearMissedQuestion(item.q);
+                renderHomeDashboard();
+              } else {
+                btn.classList.add("wrong");
+                State.playSound("wrong");
+              }
+            });
+          });
+        }
+
+        const capEl = document.getElementById("capstoneHomeCard");
+        capEl.innerHTML = `
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <strong>Zero-to-Hero Capstone Exam</strong>
+            <span class="tag ${st.capstoneCleared ? "tag-green" : "tag-gold"}">${st.capstoneCleared ? "✓ Cleared" : "+100 XP"}</span>
+          </div>
+          <p class="muted" style="font-size:13.5px; margin:6px 0 10px;">3-step end-to-end closed-loop Affective BCI diagnostic case study.</p>
+          <a class="btn btn-sm btn-gold" href="games.html?tab=capstone">${st.capstoneCleared ? "Replay Capstone Exam →" : "Launch Capstone Exam →"}</a>
+        `;
+
+        document.getElementById("homeConceptGrid").innerHTML = DATA.concepts.map((c) => {
+          const done = st.mastered.includes(c.id);
+          return `
+            <div class="surface" style="margin-bottom:0; display:flex; flex-direction:column; justify-content:space-between; gap:12px;">
+              <div>
+                <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; margin-bottom:8px;">
+                  <span class="tag ${done ? "tag-green" : "tag-blue"}">${done ? "✓ Mastered" : c.tag}</span>
+                  <span class="muted" style="font-size:12px; font-family:var(--font-mono);">${c.phase}</span>
+                </div>
+                <h3>${c.title}</h3>
+                <p class="muted" style="font-size:14px; margin:0;">${c.summary}</p>
+              </div>
+              <a class="btn btn-sm" href="learn.html?concept=${c.id}">Open Studio (3-Tier Theory + Lab + Check)</a>
+            </div>`;
+        }).join("");
+      }
+
+      renderHomeDashboard();
 
       // 3Blue1Brown Animated Vector Field Hero Canvas
       const canvas = document.getElementById("heroPhaseCanvas");
       const W = 460, H = 300;
-      const ctx = window.NotebookState.setupHiDPICanvas(canvas, W, H);
+      const ctx = State.setupHiDPICanvas(canvas, W, H);
       let goal = { x: W * 0.72, y: H * 0.70 };
       const particles = Array.from({ length: 28 }, (_, i) => ({
         x: (i * 53) % W,
@@ -149,6 +206,7 @@
         const r = canvas.getBoundingClientRect();
         goal.x = ((e.clientX - r.left) / r.width) * W;
         goal.y = ((e.clientY - r.top) / r.height) * H;
+        State.playSound("tap");
         if (reduced) drawFrame();
       });
 
@@ -157,7 +215,6 @@
         ctx.fillStyle = isLight ? "rgba(237, 241, 247, 0.30)" : "rgba(9, 12, 17, 0.25)";
         ctx.fillRect(0, 0, W, H);
 
-        // Subtle axes
         ctx.strokeStyle = isLight ? "rgba(15,23,42,0.12)" : "rgba(255,255,255,0.10)";
         ctx.lineWidth = 1;
         ctx.beginPath();
@@ -165,7 +222,6 @@
         ctx.moveTo(12, H / 2); ctx.lineTo(W - 12, H / 2);
         ctx.stroke();
 
-        // Particles flowing toward goal (3b1b blue/gold trails)
         particles.forEach((p, idx) => {
           const dx = goal.x - p.x;
           const dy = goal.y - p.y;
@@ -186,7 +242,6 @@
           ctx.fill();
         });
 
-        // Target glow ring
         ctx.strokeStyle = "#83c167";
         ctx.lineWidth = 2;
         ctx.beginPath();

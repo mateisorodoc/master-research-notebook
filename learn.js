@@ -1,5 +1,5 @@
 /* ==========================================================================
-   MASTER_RESEARCH — Concept Mastery Packs (Theory + 7 Interactive Labs + Trivia)
+   MASTER_RESEARCH — Zero-to-Hero Concept Studio (3-Tier Depth + Lab Missions)
    ========================================================================== */
 
 (function () {
@@ -8,6 +8,7 @@
   if (!DATA || !State) return;
 
   const rail = document.getElementById("conceptRail");
+  const studioWrap = document.getElementById("studioWrap");
   const tabTheory = document.getElementById("tabTheory");
   const tabLab = document.getElementById("tabLab");
   const tabTrivia = document.getElementById("tabTrivia");
@@ -15,7 +16,25 @@
   const params = new URLSearchParams(window.location.search);
   let activeId = params.get("concept") || DATA.concepts[0].id;
   if (!DATA.concepts.some((c) => c.id === activeId)) activeId = DATA.concepts[0].id;
-  let activeTab = "theory";
+  let activeTab = "studio";
+
+  function syncDepthButtons() {
+    const lvl = State.getDepth();
+    document.querySelectorAll(".depth-btn").forEach((b) => {
+      b.setAttribute("aria-pressed", String(parseInt(b.dataset.depth, 10) === lvl));
+    });
+  }
+
+  document.querySelectorAll(".depth-btn").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      State.setDepth(parseInt(btn.dataset.depth, 10));
+    });
+  });
+
+  window.addEventListener("depthchange", () => {
+    syncDepthButtons();
+    renderTheoryOnly();
+  });
 
   function renderRail() {
     const mastered = State.get().mastered;
@@ -30,23 +49,63 @@
       .join("");
     rail.querySelectorAll(".concept-chip").forEach((btn) => {
       btn.addEventListener("click", () => {
+        State.playSound("tap");
         activeId = btn.dataset.cid;
         renderPack();
       });
     });
   }
 
+  function stepConcept(delta) {
+    const idx = DATA.concepts.findIndex((c) => c.id === activeId);
+    const nextIdx = (idx + delta + DATA.concepts.length) % DATA.concepts.length;
+    activeId = DATA.concepts[nextIdx].id;
+    State.playSound("tap");
+    renderPack();
+  }
+
+  const prevBtn = document.getElementById("prevConceptBtn");
+  const nextBtn = document.getElementById("nextConceptBtn");
+  if (prevBtn) prevBtn.addEventListener("click", () => stepConcept(-1));
+  if (nextBtn) nextBtn.addEventListener("click", () => stepConcept(1));
+
+  document.addEventListener("keydown", (e) => {
+    if (e.target && ["INPUT", "TEXTAREA", "SELECT"].includes(e.target.tagName)) return;
+    if (e.key === "j" || e.key === "J") stepConcept(1);
+    else if (e.key === "k" || e.key === "K") stepConcept(-1);
+  });
+
   function switchTab(tabName) {
     activeTab = tabName;
+    State.playSound("tap");
     document.querySelectorAll(".pack-tab-btn").forEach((b) => {
       b.setAttribute("aria-pressed", String(b.dataset.tab === tabName));
     });
-    tabTheory.hidden = tabName !== "theory";
-    tabLab.hidden = tabName !== "lab";
-    tabTrivia.hidden = tabName !== "trivia";
-    if (tabName === "lab") {
+    if (tabName === "studio") {
+      studioWrap.hidden = false;
+      studioWrap.className = "studio-grid";
+      tabTheory.hidden = false;
+      tabLab.hidden = false;
+      tabTrivia.hidden = true;
       const c = DATA.concepts.find((x) => x.id === activeId);
-      mountLab(c.labType);
+      mountLab(c);
+    } else if (tabName === "theory") {
+      studioWrap.hidden = false;
+      studioWrap.className = "";
+      tabTheory.hidden = false;
+      tabLab.hidden = true;
+      tabTrivia.hidden = true;
+    } else if (tabName === "lab") {
+      studioWrap.hidden = false;
+      studioWrap.className = "";
+      tabTheory.hidden = true;
+      tabLab.hidden = false;
+      tabTrivia.hidden = true;
+      const c = DATA.concepts.find((x) => x.id === activeId);
+      mountLab(c);
+    } else if (tabName === "trivia") {
+      studioWrap.hidden = true;
+      tabTrivia.hidden = false;
     }
   }
 
@@ -54,7 +113,90 @@
     btn.addEventListener("click", () => switchTab(btn.dataset.tab));
   });
 
+  function renderTheoryOnly() {
+    const c = DATA.concepts.find((x) => x.id === activeId);
+    const lvl = State.getDepth();
+    let depthHtml = "";
+    if (lvl === 1) {
+      depthHtml = `
+        <div class="note-box">
+          <strong>Level 1 · Plain-English Intuition (ELI12)</strong>
+          <p style="margin:6px 0 0;">${c.plainEnglish}</p>
+        </div>
+        <details class="deep-dive">
+          <summary>Peek at Level 3 Math &amp; Code Reference</summary>
+          <div class="math-block">${c.math}</div>
+          <p class="muted" style="font-size:13px; margin:0;"><strong>Verified Source:</strong> <code>${c.codeRef}</code></p>
+        </details>
+      `;
+    } else if (lvl === 2) {
+      depthHtml = `
+        <div class="note-box">
+          <strong>Level 2 · Practitioner Pipeline &amp; Architecture</strong>
+          <p style="margin:6px 0 0;">${c.plainEnglish}</p>
+        </div>
+        <div class="readout-row" style="margin-bottom:12px;">
+          <div class="readout-cell">Research Phase<strong>${c.phase}</strong></div>
+          <div class="readout-cell">Evidence Tag<strong>${c.tag}</strong></div>
+          <div class="readout-cell">Module / Source<strong>${c.codeRef}</strong></div>
+        </div>
+        <div class="math-block">${c.math}</div>
+      `;
+    } else {
+      depthHtml = `
+        <div class="note-box warn">
+          <strong>Level 3 · Formal Mastery, Equations &amp; Verified Source</strong>
+          <p style="margin:6px 0 0;">${c.plainEnglish}</p>
+        </div>
+        <div class="math-block">${c.math}</div>
+        <p class="muted" style="font-size:13.5px;"><strong>Direct Source Traceability:</strong> <code>${c.codeRef}</code></p>
+      `;
+    }
+
+    tabTheory.innerHTML = `
+      ${depthHtml}
+      <div style="display:flex; flex-wrap:wrap; gap:8px; margin-top:14px;">
+        <button class="btn btn-primary btn-sm" type="button" id="goTriviaBtn">Take Mastery Check (+30 XP) →</button>
+      </div>
+    `;
+    const gt = document.getElementById("goTriviaBtn");
+    if (gt) gt.addEventListener("click", () => switchTab("trivia"));
+  }
+
+  function renderMissionsBar(c) {
+    const missions = (DATA.labMissions && DATA.labMissions[c.labType]) || [];
+    if (!missions.length) return "";
+    return `
+      <div class="mission-bar" id="labMissionBar">
+        ${missions
+          .map((m) => {
+            const done = State.isMissionDone(c.id, m.id);
+            return `<div class="mission-pill ${done ? "done" : ""}" id="mpill_${m.id}">
+              <span>${done ? "✓ " : "🎯 "}${m.prompt}</span>
+              <span class="tag ${done ? "tag-green" : "tag-gold"}">${done ? "Cleared" : "+" + m.xp + " XP"}</span>
+            </div>`;
+          })
+          .join("")}
+      </div>
+    `;
+  }
+
+  function triggerMission(c, missionId) {
+    if (State.completeMission(c.id, missionId, 25)) {
+      const pill = document.getElementById(`mpill_${missionId}`);
+      if (pill) {
+        pill.classList.add("done");
+        const tag = pill.querySelector(".tag");
+        if (tag) {
+          tag.className = "tag tag-green";
+          tag.textContent = "Cleared";
+        }
+      }
+    }
+  }
+
   function renderPack() {
+    syncDepthButtons();
     renderRail();
     const c = DATA.concepts.find((x) => x.id === activeId);
     const isMast = State.get().mastered.includes(c.id);
@@ -62,31 +204,22 @@
     document.getElementById("packTitle").textContent = c.title;
     document.getElementById("packSummary").textContent = c.summary;
     const badge = document.getElementById("packBadge");
-    badge.textContent = isMast ? "Mastered" : `${c.phase} · ${c.tag}`;
+    badge.textContent = isMast ? "✓ Mastered" : `${c.phase} · ${c.tag}`;
     badge.className = `tag ${isMast ? "tag-green" : "tag-blue"}`;
 
-    // 1. Theory Tab
-    tabTheory.innerHTML = `
-      <div class="note-box">
-        <strong>Plain-English Intuition</strong>
-        <p style="margin:6px 0 0;">${c.plainEnglish}</p>
-      </div>
-      <div class="math-block">${c.math}</div>
-      <p class="muted" style="font-size:13.5px;"><strong>Verified Code / Source:</strong> <code>${c.codeRef}</code></p>
-      <div style="margin-top:14px;">
-        <button class="btn btn-primary btn-sm" type="button" id="goLabBtn">Launch Interactive Lab →</button>
-      </div>
-    `;
-    document.getElementById("goLabBtn").addEventListener("click", () => switchTab("lab"));
+    renderTheoryOnly();
 
-    // 2. Trivia Tab
+    // Mastery Check Tab (Warm-up + Application)
     let triviaCorrect = new Array(c.trivia.length).fill(false);
     tabTrivia.innerHTML =
       c.trivia
         .map(
           (t, ti) => `
       <div class="surface-lab" data-ti="${ti}">
-        <strong>Q${ti + 1}. ${t.q}</strong>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+          <strong>Stage ${ti + 1} Check · ${t.q}</strong>
+          <span class="tag ${ti === 0 ? "tag-blue" : "tag-gold"}">${ti === 0 ? "Warm-Up" : "Boss Check"}</span>
+        </div>
         <div class="quiz-options">
           ${t.options
             .map((opt, oi) => `<button class="quiz-opt" type="button" data-oi="${oi}">${opt}</button>`)
@@ -97,7 +230,7 @@
         )
         .join("") +
       `<div id="triviaCompleteBanner" class="note-box good" hidden>
-        <strong>Concept Mastered!</strong> You answered all trivia questions correctly and earned +30 XP.
+        <strong>Concept Mastered!</strong> You passed all Mastery Checks and earned +30 XP.
       </div>`;
 
     tabTrivia.querySelectorAll(".quiz-opt").forEach((btn) => {
@@ -117,7 +250,7 @@
         fb.textContent = qObj.explain;
 
         if (oi === qObj.answer) {
-          if (!triviaCorrect[ti]) State.awardXP(10, "Trivia");
+          if (!triviaCorrect[ti]) State.awardXP(10, "Mastery Check");
           triviaCorrect[ti] = true;
           if (triviaCorrect.every(Boolean)) {
             State.markMastered(c.id);
@@ -125,32 +258,43 @@
             renderRail();
           }
         } else {
-          State.resetStreak();
+          State.resetStreak({
+            conceptId: c.id,
+            q: qObj.q,
+            options: qObj.options,
+            answer: qObj.answer,
+            explain: qObj.explain
+          });
         }
       });
     });
 
-    if (activeTab === "lab") mountLab(c.labType);
+    if (activeTab === "studio" || activeTab === "lab") {
+      mountLab(c);
+    }
   }
 
   // ------------------------------------------------------------------------
-  // Interactive Labs Dispatcher
+  // Interactive Labs Dispatcher (with Auto-Verified Missions + Sticky Mobile)
   // ------------------------------------------------------------------------
-  function mountLab(type) {
-    if (type === "circumplex") return renderCircumplexLab();
-    if (type === "montage") return renderMontageLab();
-    if (type === "causality") return renderCausalityLab();
-    if (type === "eeg-bands") return renderEegBandsLab();
-    if (type === "gsr-parallel") return renderGsrParallelLab();
-    if (type === "timeline") return renderTimelineLab();
-    if (type === "kalman-preview") return renderKalmanLab();
+  function mountLab(c) {
+    const type = c.labType;
+    if (type === "circumplex") return renderCircumplexLab(c);
+    if (type === "montage") return renderMontageLab(c);
+    if (type === "causality") return renderCausalityLab(c);
+    if (type === "eeg-bands") return renderEegBandsLab(c);
+    if (type === "gsr-parallel") return renderGsrParallelLab(c);
+    if (type === "timeline") return renderTimelineLab(c);
+    if (type === "kalman-preview") return renderKalmanLab(c);
   }
 
-  // Lab A: 2D Circumplex & Multi-Actuator Coupling
-  function renderCircumplexLab() {
+  function renderCircumplexLab(c) {
     tabLab.innerHTML = `
-      <p class="muted" style="font-size:14px;">Tap anywhere on the 2D plane to set your target emotion <code>(V*, A*)</code>. Toggle Lighting + Haptics to see how we solve the tempo–valence crossover.</p>
-      <div style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:12px;">
+      ${renderMissionsBar(c)}
+      <div class="lab-canvas-sticky">
+        <canvas id="labVaCanvas" class="stage-canvas" width="700" height="310"></canvas>
+      </div>
+      <div style="display:flex; flex-wrap:wrap; gap:8px; margin:12px 0;">
         <button class="btn btn-sm pva" type="button" data-v="-0.65" data-a="0.70">Stressed</button>
         <button class="btn btn-sm pva" type="button" data-v="0.75" data-a="-0.60">Calm (High V, Low A)</button>
         <button class="btn btn-sm pva" type="button" data-v="0.80" data-a="0.65">Make Happy</button>
@@ -158,7 +302,6 @@
           <input type="checkbox" id="labMultiChk" checked style="accent-color:var(--b1b-blue);" /> Lighting + Haptics
         </label>
       </div>
-      <canvas id="labVaCanvas" class="stage-canvas" width="700" height="330"></canvas>
       <div class="readout-row">
         <div class="readout-cell">Target (V*, A*)<strong id="rVaT">(+0.75, -0.60)</strong></div>
         <div class="readout-cell">Achieved (V, A)<strong id="rVaA">(+0.73, -0.58)</strong></div>
@@ -166,10 +309,11 @@
       </div>
     `;
     const canvas = document.getElementById("labVaCanvas");
-    const W = 700, H = 330;
+    const W = 700, H = 310;
     const ctx = State.setupHiDPICanvas(canvas, W, H);
     const chk = document.getElementById("labMultiChk");
     let tV = 0.75, tA = -0.60;
+    let sawCrossover = false;
 
     function draw() {
       const cx = W / 2, cy = H / 2, r = Math.min(W, H) * 0.37;
@@ -194,6 +338,15 @@
       const multi = chk.checked;
       let aV = multi ? tV * 0.97 : (tV > 0.2 && tA < 0 ? tV - Math.min(0.85, (tV - 0.1) * Math.abs(tA) * 0.95) : tV);
       let aA = multi ? tA * 0.97 : (tA > 0.5 ? tA * 0.72 : tA * 0.92);
+
+      // Auto-verify Lab Missions
+      if (!multi && tV > 0.4 && tA < -0.3) {
+        sawCrossover = true;
+        triggerMission(c, "m1");
+      }
+      if (sawCrossover && multi && tV > 0.4 && tA < -0.3) {
+        triggerMission(c, "m2");
+      }
 
       const tx = cx + tV * r, ty = cy - tA * r;
       const ax = cx + aV * r, ay = cy - aA * r;
@@ -231,16 +384,16 @@
     draw();
   }
 
-  // Lab B: 10-20 Montage Explorer
-  function renderMontageLab() {
+  function renderMontageLab(c) {
     tabLab.innerHTML = `
+      ${renderMissionsBar(c)}
       <div style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:14px;">
-        <button class="btn btn-sm mbtn" type="button" data-m="full_32" aria-pressed="true">full_32 (146 feats)</button>
-        <button class="btn btn-sm mbtn" type="button" data-m="wearable_6" aria-pressed="false">wearable_6 (38 feats)</button>
+        <button class="btn btn-sm mbtn" type="button" data-m="full_32" aria-pressed="false">full_32 (146 feats)</button>
+        <button class="btn btn-sm mbtn" type="button" data-m="wearable_6" aria-pressed="true">wearable_6 (38 feats)</button>
         <button class="btn btn-sm mbtn" type="button" data-m="wearable_4" aria-pressed="false">wearable_4 (29 feats)</button>
       </div>
       <div class="grid-2" style="align-items:start;">
-        <svg id="labHeadSvg" viewBox="0 0 280 280" style="width:100%; max-width:280px; background:var(--bg-code); border:1px solid var(--border); border-radius:12px; margin:0 auto; display:block;"></svg>
+        <svg id="labHeadSvg" viewBox="0 0 280 280" style="width:100%; max-width:260px; background:var(--bg-code); border:1px solid var(--border); border-radius:12px; margin:0 auto; display:block;"></svg>
         <div>
           <h3 id="lmTitle"></h3>
           <p id="lmDesc" class="muted" style="font-size:14px;"></p>
@@ -258,6 +411,7 @@
     `;
     const svg = document.getElementById("labHeadSvg");
     function setM(key) {
+      if (key === "wearable_4") triggerMission(c, "m1");
       const m = DATA.montages[key];
       document.getElementById("lmTitle").textContent = m.name;
       document.getElementById("lmDesc").textContent = `${m.plainEnglish} (${m.extras})`;
@@ -277,32 +431,37 @@
       });
       svg.innerHTML = html;
       svg.querySelectorAll(".eg").forEach((g) => {
-        const pick = () => {
+        g.addEventListener("click", () => {
+          State.playSound("tap");
           document.getElementById("lmElecName").textContent = `${g.dataset.n} (Geneva Index ${g.dataset.i})`;
           document.getElementById("lmElecRole").textContent = g.dataset.r;
-        };
-        g.addEventListener("click", pick);
+          if (g.dataset.n === "F4") triggerMission(c, "m2");
+        });
       });
     }
     tabLab.querySelectorAll(".mbtn").forEach((b) => b.addEventListener("click", () => setM(b.dataset.m)));
     setM("wearable_6");
   }
 
-  // Lab C: Causality Simulator
-  function renderCausalityLab() {
+  function renderCausalityLab(c) {
     tabLab.innerHTML = `
-      <div style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:12px;">
+      ${renderMissionsBar(c)}
+      <div class="lab-canvas-sticky">
+        <canvas id="labCausCanvas" class="stage-canvas" width="700" height="240"></canvas>
+      </div>
+      <div style="display:flex; flex-wrap:wrap; gap:8px; margin-top:12px;">
         <button class="btn btn-sm fbtn" type="button" data-m="causal" aria-pressed="true">Causal SOS (0.0 leak)</button>
         <button class="btn btn-sm fbtn" type="button" data-m="acausal" aria-pressed="false">Acausal filtfilt (27.60 leak)</button>
         <button class="btn btn-sm fbtn" type="button" data-m="both" aria-pressed="false">Compare Both</button>
       </div>
-      <canvas id="labCausCanvas" class="stage-canvas" width="700" height="250"></canvas>
     `;
     const canvas = document.getElementById("labCausCanvas");
-    const W = 700, H = 250;
+    const W = 700, H = 240;
     const ctx = State.setupHiDPICanvas(canvas, W, H);
     let mode = "causal";
     function draw() {
+      if (mode === "acausal") triggerMission(c, "m1");
+      if (mode === "both") triggerMission(c, "m2");
       ctx.clearRect(0, 0, W, H);
       const bx = W * 0.56, by = H * 0.58;
       ctx.strokeStyle = "#f9c846"; ctx.setLineDash([6, 4]);
@@ -339,9 +498,9 @@
     draw();
   }
 
-  // Lab D: EEG Bandpower & FAA (F4 - F3) Explorer
-  function renderEegBandsLab() {
+  function renderEegBandsLab(c) {
     tabLab.innerHTML = `
+      ${renderMissionsBar(c)}
       <p class="muted" style="font-size:14px;">Adjust right frontal (<code>F4</code>) and left frontal (<code>F3</code>) log-alpha power to see how <strong>Frontal Alpha Asymmetry (FAA = F4 - F3)</strong> shifts emotional Valence!</p>
       <div class="grid-2">
         <label class="surface-lab" style="margin:0;">
@@ -363,6 +522,8 @@
     function upd() {
       const v4 = parseFloat(f4.value), v3 = parseFloat(f3.value);
       const faa = v4 - v3;
+      if (faa > 1.0) triggerMission(c, "m1");
+      if (faa < -0.8) triggerMission(c, "m2");
       document.getElementById("f4Val").textContent = v4.toFixed(2);
       document.getElementById("f3Val").textContent = v3.toFixed(2);
       document.getElementById("faaOut").textContent = (faa >= 0 ? "+" : "") + faa.toFixed(2);
@@ -374,21 +535,30 @@
     upd();
   }
 
-  // Lab E: GSR Parallel vs Subtractive Phase Mismatch
-  function renderGsrParallelLab() {
+  function renderGsrParallelLab(c) {
     tabLab.innerHTML = `
-      <p class="muted" style="font-size:14px;">Toggle between our <strong>Parallel Bandpass SCR</strong> and naive <strong>Subtractive (Raw - 0.05 Hz Lowpass)</strong> to see why a 4.86 s group delay ruins subtraction.</p>
-      <div style="display:flex; gap:8px; margin-bottom:12px;">
+      ${renderMissionsBar(c)}
+      <div class="lab-canvas-sticky">
+        <canvas id="labGsrCanvas" class="stage-canvas" width="700" height="210"></canvas>
+      </div>
+      <div style="display:flex; gap:8px; margin-top:12px;">
         <button class="btn btn-sm gbtn" type="button" data-g="parallel" aria-pressed="true">Parallel SCR (Clean)</button>
         <button class="btn btn-sm gbtn" type="button" data-g="sub" aria-pressed="false">Naive Subtract (Phase Mismatch)</button>
       </div>
-      <canvas id="labGsrCanvas" class="stage-canvas" width="700" height="220"></canvas>
     `;
     const canvas = document.getElementById("labGsrCanvas");
-    const W = 700, H = 220;
+    const W = 700, H = 210;
     const ctx = State.setupHiDPICanvas(canvas, W, H);
     let gmode = "parallel";
+    let sawSub = false;
     function draw() {
+      if (gmode === "sub") {
+        sawSub = true;
+        triggerMission(c, "m1");
+      }
+      if (sawSub && gmode === "parallel") {
+        triggerMission(c, "m2");
+      }
       ctx.clearRect(0, 0, W, H);
       const mid = H * 0.55;
       ctx.strokeStyle = gmode === "parallel" ? "#83c167" : "#fc6255";
@@ -415,9 +585,9 @@
     draw();
   }
 
-  // Lab F: 63s Trial Timeline
-  function renderTimelineLab() {
+  function renderTimelineLab(c) {
     tabLab.innerHTML = `
+      ${renderMissionsBar(c)}
       <label style="display:flex; align-items:center; gap:12px; margin-bottom:14px;">
         <span>Trial Time: <strong id="ltOut" style="color:var(--b1b-blue); font-family:var(--font-mono);">15.0 s</strong></span>
         <input id="ltSlider" type="range" min="0" max="63" step="0.5" value="15" style="flex:1; accent-color:var(--b1b-blue);" />
@@ -432,6 +602,8 @@
     const sl = document.getElementById("ltSlider");
     function upd() {
       const t = parseFloat(sl.value);
+      if (t < 3.0) triggerMission(c, "m1");
+      if (t >= 33.5) triggerMission(c, "m2");
       document.getElementById("ltOut").textContent = `${t.toFixed(1)} s`;
       if (t < 3) {
         document.getElementById("ltPhase").textContent = "Baseline Fixation (0–3 s)";
@@ -450,18 +622,19 @@
     upd();
   }
 
-  // Lab G: Kalman Filter & EEG Dropout Preview (Phase 2-4)
-  function renderKalmanLab() {
+  function renderKalmanLab(c) {
     tabLab.innerHTML = `
-      <p class="muted" style="font-size:14px;">Simulate a <strong>Kalman Filter</strong> tracking true emotion (blue) from noisy sensors (gold dots). Toggle an <strong>EEG Dropout</strong> mid-trial to see how the filter relies on its state-space model + slow peripheral sensors!</p>
-      <div style="display:flex; flex-wrap:wrap; gap:10px; margin-bottom:12px;">
+      ${renderMissionsBar(c)}
+      <div class="lab-canvas-sticky">
+        <canvas id="labKalmanCanvas" class="stage-canvas" width="700" height="230"></canvas>
+      </div>
+      <div style="display:flex; flex-wrap:wrap; gap:10px; margin-top:12px;">
         <label class="btn btn-sm"><input type="checkbox" id="kDropChk" style="accent-color:var(--b1b-coral);" /> Simulate EEG Dropout (t = 20–40 s)</label>
         <label class="btn btn-sm" style="gap:8px;">Model Trust (1/Q): <input id="kTrust" type="range" min="1" max="10" value="5" style="accent-color:var(--b1b-blue);" /></label>
       </div>
-      <canvas id="labKalmanCanvas" class="stage-canvas" width="700" height="240"></canvas>
     `;
     const canvas = document.getElementById("labKalmanCanvas");
-    const W = 700, H = 240;
+    const W = 700, H = 230;
     const ctx = State.setupHiDPICanvas(canvas, W, H);
     const dropChk = document.getElementById("kDropChk");
     const trust = document.getElementById("kTrust");
@@ -469,7 +642,10 @@
     function draw() {
       ctx.clearRect(0, 0, W, H);
       const drop = dropChk.checked;
-      const gain = 1 / (parseFloat(trust.value) * 0.4 + 0.6);
+      const trVal = parseFloat(trust.value);
+      if (drop) triggerMission(c, "m1");
+      if (drop && trVal >= 8) triggerMission(c, "m2");
+      const gain = 1 / (trVal * 0.4 + 0.6);
 
       if (drop) {
         ctx.fillStyle = "rgba(252, 98, 85, 0.12)";
@@ -479,7 +655,6 @@
         ctx.fillText("EEG DROPOUT ZONE", W * 0.41, 20);
       }
 
-      // True trajectory (3b1b blue) + Kalman estimate (3b1b green)
       let est = H * 0.55;
       const ptsEst = [];
       ctx.strokeStyle = "#58c4dd"; ctx.lineWidth = 2; ctx.beginPath();

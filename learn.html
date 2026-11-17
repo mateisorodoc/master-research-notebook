@@ -3,10 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Learn — Theory + Lab + Trivia Packs</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600;700&family=Fira+Sans:wght@400;500;600;700&family=STIX+Two+Text:wght@600;700&display=swap" rel="stylesheet" />
+  <title>Learn — Zero-to-Hero Concept Studio</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
@@ -43,8 +40,15 @@
   </header>
 
   <main id="mainContent" class="page-wrap" tabindex="-1">
-    <h1>Concept Mastery Packs</h1>
-    <p class="muted">Pick any concept below. Complete the <strong>Theory</strong>, experiment in the <strong>Lab</strong>, and pass the <strong>Trivia</strong> to mark it Mastered.</p>
+    <div style="display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:12px; margin-bottom:8px;">
+      <h1 style="margin:0;">Zero-to-Hero Concept Studio</h1>
+      <div class="depth-bar" role="group" aria-label="Explanation depth level">
+        <button class="depth-btn" type="button" data-depth="1" aria-pressed="true">1. Intuition (ELI12)</button>
+        <button class="depth-btn" type="button" data-depth="2" aria-pressed="false">2. Practitioner</button>
+        <button class="depth-btn" type="button" data-depth="3" aria-pressed="false">3. Mastery (Math &amp; Code)</button>
+      </div>
+    </div>
+    <p class="muted">Pick a concept below (or press <code>J</code> / <code>K</code> to cycle concepts, <code>D</code> to switch depth). Clear the <strong>Lab Missions</strong> (+25 XP each) and pass the <strong>Mastery Check</strong> (+30 XP).</p>
 
     <!-- Scrollable Concept Selector -->
     <div id="conceptRail" class="concept-rail" role="tablist" aria-label="Concepts"></div>
@@ -53,18 +57,25 @@
     <section class="surface" id="packContainer">
       <div style="display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:10px; margin-bottom:10px;">
         <h2 id="packTitle" style="margin:0;">Loading...</h2>
-        <span id="packBadge" class="tag tag-blue">Phase 1</span>
+        <div style="display:flex; gap:8px; align-items:center;">
+          <button id="prevConceptBtn" class="btn btn-sm" type="button" aria-label="Previous concept">← Prev</button>
+          <span id="packBadge" class="tag tag-blue">Phase 1</span>
+          <button id="nextConceptBtn" class="btn btn-sm" type="button" aria-label="Next concept">Next →</button>
+        </div>
       </div>
       <p id="packSummary" class="muted"></p>
 
       <div class="pack-tabs" role="tablist" aria-label="Pack sections">
-        <button class="btn btn-sm pack-tab-btn" type="button" data-tab="theory" aria-pressed="true">1. Theory</button>
-        <button class="btn btn-sm pack-tab-btn" type="button" data-tab="lab" aria-pressed="false">2. Interactive Lab</button>
-        <button class="btn btn-sm pack-tab-btn" type="button" data-tab="trivia" aria-pressed="false">3. Concept Trivia</button>
+        <button class="btn btn-sm pack-tab-btn" type="button" data-tab="studio" aria-pressed="true">Studio (Theory + Live Lab)</button>
+        <button class="btn btn-sm pack-tab-btn" type="button" data-tab="theory" aria-pressed="false">1. Theory Only</button>
+        <button class="btn btn-sm pack-tab-btn" type="button" data-tab="lab" aria-pressed="false">2. Interactive Lab + Missions</button>
+        <button class="btn btn-sm pack-tab-btn" type="button" data-tab="trivia" aria-pressed="false">3. Mastery Check</button>
       </div>
 
-      <div id="tabTheory"></div>
-      <div id="tabLab" hidden></div>
+      <div id="studioWrap" class="studio-grid">
+        <div id="tabTheory"></div>
+        <div id="tabLab" class="studio-lab-pane"></div>
+      </div>
       <div id="tabTrivia" hidden></div>
     </section>
   </main>
