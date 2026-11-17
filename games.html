@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Arcade — Interactive Mastery Games</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600;700&family=Fira+Sans:wght@400;500;600;700&family=STIX+Two+Text:wght@600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <a class="skip-link" href="#mainContent">Skip to content</a>
+
+  <header class="topbar">
+    <a class="brand-link" href="index.html">
+      <span class="brand-mark" aria-hidden="true">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+          <circle cx="12" cy="12" r="9"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><circle cx="9" cy="10" r="1"/><circle cx="15" cy="10" r="1"/>
+        </svg>
+      </span>
+      <span>Affective Control Lab</span>
+    </a>
+
+    <nav class="desktop-nav" aria-label="Main navigation">
+      <a class="nav-item" href="index.html">Home</a>
+      <a class="nav-item" href="learn.html">Learn (10 Packs)</a>
+      <a class="nav-item" href="games.html" aria-current="page">Arcade</a>
+      <a class="nav-item" href="map.html">Knowledge Map</a>
+      <a class="nav-item" href="glossary.html">Glossary</a>
+      <a class="nav-item" href="roadmap.html">Roadmap</a>
+    </nav>
+
+    <div class="hud-group">
+      <span class="hud-pill xp" id="hudXp">0 XP</span>
+      <span class="hud-pill" id="hudStreak">0 Streak</span>
+      <button id="themeToggleBtn" class="btn btn-sm" type="button" aria-pressed="false" aria-label="Toggle theme">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <main id="mainContent" class="page-wrap" tabindex="-1">
+    <h1>Mastery Arcade</h1>
+    <p class="muted">Sharpen your intuition with bite-sized games. Every correct answer builds your streak and earns XP.</p>
+
+    <div class="pack-tabs" role="tablist" aria-label="Mini-games">
+      <button class="btn btn-sm g-tab" type="button" data-g="blank" aria-pressed="true">1. Complete Sentence / Code</button>
+      <button class="btn btn-sm g-tab" type="button" data-g="match" aria-pressed="false">2. Link Concepts</button>
+      <button class="btn btn-sm g-tab" type="button" data-g="flaw" aria-pressed="false">3. Spot the Flaw</button>
+    </div>
+
+    <!-- Game 1: Complete the Sentence / Code -->
+    <section id="gameBlank" class="surface"></section>
+
+    <!-- Game 2: Link Concepts -->
+    <section id="gameMatch" class="surface" hidden></section>
+
+    <!-- Game 3: Spot the Engineering Flaw -->
+    <section id="gameFlaw" class="surface" hidden></section>
+  </main>
+
+  <nav class="mobile-bottom-nav" aria-label="Mobile navigation">
+    <a class="bottom-tab" href="index.html">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+      <span>Home</span>
+    </a>
+    <a class="bottom-tab" href="learn.html">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+      <span>Learn</span>
+    </a>
+    <a class="bottom-tab" href="games.html" aria-current="page">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+      <span>Arcade</span>
+    </a>
+    <a class="bottom-tab" href="map.html">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="6" cy="6" r="3"/><circle cx="18" cy="18" r="3"/><circle cx="18" cy="6" r="3"/><line x1="8.5" y1="7.5" x2="15.5" y2="16.5"/><line x1="9" y1="6" x2="15" y2="6"/></svg>
+      <span>Map</span>
+    </a>
+    <a class="bottom-tab" href="glossary.html">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="14" y2="18"/></svg>
+      <span>Glossary</span>
+    </a>
+  </nav>
+
+  <script src="notebook-data.js"></script>
+  <script src="shared.js"></script>
+  <script>
+    (function () {
+      const DATA = window.NOTEBOOK_DATA.arcade;
+      const State = window.NotebookState;
+
+      // Tab switcher
+      const panes = {
+        blank: document.getElementById("gameBlank"),
+        match: document.getElementById("gameMatch"),
+        flaw: document.getElementById("gameFlaw")
+      };
+      document.querySelectorAll(".g-tab").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const g = btn.dataset.g;
+          document.querySelectorAll(".g-tab").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.g === g)));
+          Object.entries(panes).forEach(([k, el]) => { el.hidden = k !== g; });
+        });
+      });
+
+      // --- Game 1: Complete the Sentence / Code ---
+      let bIdx = 0;
+      function renderBlank() {
+        const item = DATA.fillBlanks[bIdx];
+        const shuffled = [...item.choices].sort(() => Math.random() - 0.5);
+        panes.blank.innerHTML = `
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+            <span class="tag tag-blue">Round ${bIdx + 1} / ${DATA.fillBlanks.length}</span>
+            <button id="nextBlankBtn" class="btn btn-sm" type="button">Next Round →</button>
+          </div>
+          <p style="font-size:17px; line-height:1.7;">
+            ${item.prompt} <span id="blankSlot" class="blank-slot">_____</span> ${item.after}
+          </p>
+          <div class="chip-bank">
+            ${shuffled.map((c) => `<button class="game-chip b-chip" type="button" data-val="${c}">${c}</button>`).join("")}
+          </div>
+          <div id="blankFb" class="note-box" hidden></div>
+        `;
+        panes.blank.querySelectorAll(".b-chip").forEach((ch) => {
+          ch.addEventListener("click", () => {
+            const ok = ch.dataset.val === item.blank;
+            document.getElementById("blankSlot").textContent = ch.dataset.val;
+            const fb = document.getElementById("blankFb");
+            fb.hidden = false;
+            fb.className = `note-box ${ok ? "good" : "warn"}`;
+            fb.textContent = (ok ? "Correct! " : `Not quite (answer: ${item.blank}). `) + item.explain;
+            ch.classList.add(ok ? "matched" : "wrong");
+            if (ok) State.awardXP(15, "Fill-in-Blank");
+            else State.resetStreak();
+          });
+        });
+        document.getElementById("nextBlankBtn").addEventListener("click", () => {
+          bIdx = (bIdx + 1) % DATA.fillBlanks.length;
+          renderBlank();
+        });
+      }
+      renderBlank();
+
+      // --- Game 2: Link Concepts ---
+      let deckIdx = 0;
+      function renderMatch() {
+        const deck = DATA.matchDecks[deckIdx];
+        const lefts = deck.pairs.map((p, i) => ({ text: p.left, id: i }));
+        const rights = deck.pairs.map((p, i) => ({ text: p.right, id: i })).sort(() => Math.random() - 0.5);
+        let selL = null, selR = null;
+        let matched = 0;
+
+        panes.match.innerHTML = `
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:12px;">
+            <h2 style="margin:0; font-size:20px;">${deck.title}</h2>
+            <button id="nextDeckBtn" class="btn btn-sm" type="button">Switch Deck →</button>
+          </div>
+          <p class="muted" style="font-size:14px;">Tap one item on the left, then tap its matching partner on the right.</p>
+          <div class="grid-2">
+            <div class="chip-bank" style="flex-direction:column;" id="mLeftCol">
+              ${lefts.map((l) => `<button class="game-chip" type="button" data-side="L" data-id="${l.id}">${l.text}</button>`).join("")}
+            </div>
+            <div class="chip-bank" style="flex-direction:column;" id="mRightCol">
+              ${rights.map((r) => `<button class="game-chip" type="button" data-side="R" data-id="${r.id}">${r.text}</button>`).join("")}
+            </div>
+          </div>
+          <div id="matchFb" class="note-box good" hidden>Deck Cleared! +25 XP</div>
+        `;
+
+        function checkPair() {
+          if (!selL || !selR) return;
+          if (selL.dataset.id === selR.dataset.id) {
+            selL.classList.remove("selected"); selR.classList.remove("selected");
+            selL.classList.add("matched"); selR.classList.add("matched");
+            selL.disabled = true; selR.disabled = true;
+            matched++;
+            State.awardXP(10, "Match");
+            if (matched === deck.pairs.length) {
+              document.getElementById("matchFb").hidden = false;
+              State.awardXP(25, "Deck Clear");
+            }
+          } else {
+            selL.classList.add("wrong"); selR.classList.add("wrong");
+            State.resetStreak();
+            const a = selL, b = selR;
+            setTimeout(() => { a.classList.remove("wrong", "selected"); b.classList.remove("wrong", "selected"); }, 450);
+          }
+          selL = null; selR = null;
+        }
+
+        panes.match.querySelectorAll(".game-chip").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            if (btn.dataset.side === "L") {
+              panes.match.querySelectorAll('[data-side="L"]').forEach((x) => x.classList.remove("selected"));
+              selL = btn; btn.classList.add("selected");
+            } else {
+              panes.match.querySelectorAll('[data-side="R"]').forEach((x) => x.classList.remove("selected"));
+              selR = btn; btn.classList.add("selected");
+            }
+            checkPair();
+          });
+        });
+
+        document.getElementById("nextDeckBtn").addEventListener("click", () => {
+          deckIdx = (deckIdx + 1) % DATA.matchDecks.length;
+          renderMatch();
+        });
+      }
+      renderMatch();
+
+      // --- Game 3: Spot the Flaw ---
+      let fIdx = 0;
+      function renderFlaw() {
+        const item = DATA.spotFlaws[fIdx];
+        panes.flaw.innerHTML = `
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+            <span class="tag tag-coral">Reviewer Case ${fIdx + 1} / ${DATA.spotFlaws.length}</span>
+            <button id="nextFlawBtn" class="btn btn-sm" type="button">Next Case →</button>
+          </div>
+          <div class="note-box warn"><strong>Scenario:</strong> ${item.scenario}</div>
+          <p style="font-weight:600; margin-bottom:6px;">What is the engineering flaw?</p>
+          <div class="quiz-options">
+            ${item.options.map((o, i) => `<button class="quiz-opt f-opt" type="button" data-i="${i}">${o}</button>`).join("")}
+          </div>
+          <p id="flawFb" class="muted" style="margin:10px 0 0;" hidden></p>
+        `;
+        panes.flaw.querySelectorAll(".f-opt").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            const pick = parseInt(btn.dataset.i, 10);
+            panes.flaw.querySelectorAll(".f-opt").forEach((b, idx) => {
+              b.classList.remove("correct", "wrong");
+              if (idx === item.answer) b.classList.add("correct");
+              else if (idx === pick) b.classList.add("wrong");
+            });
+            const fb = document.getElementById("flawFb");
+            fb.hidden = false;
+            fb.textContent = item.explain;
+            if (pick === item.answer) State.awardXP(20, "Reviewer Catch");
+            else State.resetStreak();
+          });
+        });
+        document.getElementById("nextFlawBtn").addEventListener("click", () => {
+          fIdx = (fIdx + 1) % DATA.spotFlaws.length;
+          renderFlaw();
+        });
+      }
+      renderFlaw();
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Learn — Theory + Lab + Trivia Packs</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600;700&family=Fira+Sans:wght@400;500;600;700&family=STIX+Two+Text:wght@600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <a class="skip-link" href="#mainContent">Skip to content</a>
+
+  <header class="topbar">
+    <a class="brand-link" href="index.html">
+      <span class="brand-mark" aria-hidden="true">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+          <circle cx="12" cy="12" r="9"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><circle cx="9" cy="10" r="1"/><circle cx="15" cy="10" r="1"/>
+        </svg>
+      </span>
+      <span>Affective Control Lab</span>
+    </a>
+
+    <nav class="desktop-nav" aria-label="Main navigation">
+      <a class="nav-item" href="index.html">Home</a>
+      <a class="nav-item" href="learn.html" aria-current="page">Learn (10 Packs)</a>
+      <a class="nav-item" href="games.html">Arcade</a>
+      <a class="nav-item" href="map.html">Knowledge Map</a>
+      <a class="nav-item" href="glossary.html">Glossary</a>
+      <a class="nav-item" href="roadmap.html">Roadmap</a>
+    </nav>
+
+    <div class="hud-group">
+      <span class="hud-pill xp" id="hudXp">0 XP</span>
+      <span class="hud-pill" id="hudStreak">0 Streak</span>
+      <button id="themeToggleBtn" class="btn btn-sm" type="button" aria-pressed="false" aria-label="Toggle light or dark theme">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <main id="mainContent" class="page-wrap" tabindex="-1">
+    <h1>Concept Mastery Packs</h1>
+    <p class="muted">Pick any concept below. Complete the <strong>Theory</strong>, experiment in the <strong>Lab</strong>, and pass the <strong>Trivia</strong> to mark it Mastered.</p>
+
+    <!-- Scrollable Concept Selector -->
+    <div id="conceptRail" class="concept-rail" role="tablist" aria-label="Concepts"></div>
+
+    <!-- Active Concept Pack -->
+    <section class="surface" id="packContainer">
+      <div style="display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:10px; margin-bottom:10px;">
+        <h2 id="packTitle" style="margin:0;">Loading...</h2>
+        <span id="packBadge" class="tag tag-blue">Phase 1</span>
+      </div>
+      <p id="packSummary" class="muted"></p>
+
+      <div class="pack-tabs" role="tablist" aria-label="Pack sections">
+        <button class="btn btn-sm pack-tab-btn" type="button" data-tab="theory" aria-pressed="true">1. Theory</button>
+        <button class="btn btn-sm pack-tab-btn" type="button" data-tab="lab" aria-pressed="false">2. Interactive Lab</button>
+        <button class="btn btn-sm pack-tab-btn" type="button" data-tab="trivia" aria-pressed="false">3. Concept Trivia</button>
+      </div>
+
+      <div id="tabTheory"></div>
+      <div id="tabLab" hidden></div>
+      <div id="tabTrivia" hidden></div>
+    </section>
+  </main>
+
+  <nav class="mobile-bottom-nav" aria-label="Mobile navigation">
+    <a class="bottom-tab" href="index.html">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+      <span>Home</span>
+    </a>
+    <a class="bottom-tab" href="learn.html" aria-current="page">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+      <span>Learn</span>
+    </a>
+    <a class="bottom-tab" href="games.html">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+      <span>Arcade</span>
+    </a>
+    <a class="bottom-tab" href="map.html">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="6" cy="6" r="3"/><circle cx="18" cy="18" r="3"/><circle cx="18" cy="6" r="3"/><line x1="8.5" y1="7.5" x2="15.5" y2="16.5"/><line x1="9" y1="6" x2="15" y2="6"/></svg>
+      <span>Map</span>
+    </a>
+    <a class="bottom-tab" href="glossary.html">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="14" y2="18"/></svg>
+      <span>Glossary</span>
+    </a>
+  </nav>
+
+  <script src="notebook-data.js"></script>
+  <script src="shared.js"></script>
+  <script src="learn.js"></script>
+</body>
+</html>

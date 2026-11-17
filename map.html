@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Knowledge Map — Concept Graph</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600;700&family=Fira+Sans:wght@400;500;600;700&family=STIX+Two+Text:wght@600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <a class="skip-link" href="#mainContent">Skip to content</a>
+
+  <header class="topbar">
+    <a class="brand-link" href="index.html">
+      <span class="brand-mark" aria-hidden="true">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+          <circle cx="12" cy="12" r="9"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><circle cx="9" cy="10" r="1"/><circle cx="15" cy="10" r="1"/>
+        </svg>
+      </span>
+      <span>Affective Control Lab</span>
+    </a>
+
+    <nav class="desktop-nav" aria-label="Main navigation">
+      <a class="nav-item" href="index.html">Home</a>
+      <a class="nav-item" href="learn.html">Learn (10 Packs)</a>
+      <a class="nav-item" href="games.html">Arcade</a>
+      <a class="nav-item" href="map.html" aria-current="page">Knowledge Map</a>
+      <a class="nav-item" href="glossary.html">Glossary</a>
+      <a class="nav-item" href="roadmap.html">Roadmap</a>
+    </nav>
+
+    <div class="hud-group">
+      <span class="hud-pill xp" id="hudXp">0 XP</span>
+      <span class="hud-pill" id="hudStreak">0 Streak</span>
+      <button id="themeToggleBtn" class="btn btn-sm" type="button" aria-pressed="false" aria-label="Toggle theme">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <main id="mainContent" class="page-wrap" tabindex="-1">
+    <h1>Interactive Knowledge Map</h1>
+    <p class="muted">See how every piece of the thesis connects—from raw DEAP recordings to causal filters, state-space estimation, three actuators, and closed-loop control. Tap any node to inspect its connections.</p>
+
+    <section class="surface" style="padding: 14px;">
+      <canvas id="graphCanvas" class="stage-canvas" width="1000" height="400" aria-label="Interactive research knowledge graph"></canvas>
+    </section>
+
+    <section class="surface" id="nodeInspector" aria-live="polite">
+      <div style="display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:10px; margin-bottom:8px;">
+        <h2 id="niTitle" style="margin:0;">Select a node above</h2>
+        <a id="niLink" class="btn btn-primary btn-sm" href="learn.html">Open Mastery Pack →</a>
+      </div>
+      <p id="niSummary" class="muted" style="margin-bottom:10px;"></p>
+      <div class="readout-row">
+        <div class="readout-cell">Depends On (Inputs)<strong id="niInputs">—</strong></div>
+        <div class="readout-cell">Feeds Into (Outputs)<strong id="niOutputs">—</strong></div>
+      </div>
+    </section>
+
+    <h2>Quick Node Directory (Mobile-Friendly)</h2>
+    <div id="nodeChipList" class="chip-bank"></div>
+  </main>
+
+  <nav class="mobile-bottom-nav" aria-label="Mobile navigation">
+    <a class="bottom-tab" href="index.html">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+      <span>Home</span>
+    </a>
+    <a class="bottom-tab" href="learn.html">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+      <span>Learn</span>
+    </a>
+    <a class="bottom-tab" href="games.html">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+      <span>Arcade</span>
+    </a>
+    <a class="bottom-tab" href="map.html" aria-current="page">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="6" cy="6" r="3"/><circle cx="18" cy="18" r="3"/><circle cx="18" cy="6" r="3"/><line x1="8.5" y1="7.5" x2="15.5" y2="16.5"/><line x1="9" y1="6" x2="15" y2="6"/></svg>
+      <span>Map</span>
+    </a>
+    <a class="bottom-tab" href="glossary.html">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="14" y2="18"/></svg>
+      <span>Glossary</span>
+    </a>
+  </nav>
+
+  <script src="notebook-data.js"></script>
+  <script src="shared.js"></script>
+  <script>
+    (function () {
+      const DATA = window.NOTEBOOK_DATA;
+      const { nodes, edges } = DATA.knowledgeGraph;
+      const canvas = document.getElementById("graphCanvas");
+      const W = 1000, H = 400;
+      const ctx = window.NotebookState.setupHiDPICanvas(canvas, W, H);
+      let selectedId = "causal-filters";
+
+      function selectNode(id) {
+        selectedId = id;
+        const c = DATA.concepts.find((x) => x.id === id);
+        const ins = edges.filter((e) => e[1] === id).map((e) => e[0]);
+        const outs = edges.filter((e) => e[0] === id).map((e) => e[1]);
+        document.getElementById("niTitle").textContent = c ? c.title : id;
+        document.getElementById("niSummary").textContent = c ? c.summary : "";
+        document.getElementById("niLink").href = `learn.html?concept=${id}`;
+        document.getElementById("niInputs").textContent = ins.length ? ins.join(", ") : "Root Input";
+        document.getElementById("niOutputs").textContent = outs.length ? outs.join(", ") : "Final Manuscript Goal";
+        document.querySelectorAll(".n-chip").forEach((b) => {
+          b.classList.toggle("selected", b.dataset.id === id);
+        });
+        draw();
+      }
+
+      function draw() {
+        const isLight = document.body.classList.contains("light-theme");
+        ctx.clearRect(0, 0, W, H);
+
+        // Edges
+        edges.forEach(([aId, bId]) => {
+          const a = nodes.find((n) => n.id === aId);
+          const b = nodes.find((n) => n.id === bId);
+          const active = aId === selectedId || bId === selectedId;
+          ctx.strokeStyle = active ? "#f9c846" : (isLight ? "rgba(15,23,42,0.18)" : "rgba(154,167,189,0.25)");
+          ctx.lineWidth = active ? 2.6 : 1.4;
+          ctx.beginPath();
+          ctx.moveTo(a.x, a.y);
+          ctx.lineTo(b.x, b.y);
+          ctx.stroke();
+
+          // Arrowhead
+          const ang = Math.atan2(b.y - a.y, b.x - a.x);
+          const ax = b.x - Math.cos(ang) * 38;
+          const ay = b.y - Math.sin(ang) * 38;
+          ctx.fillStyle = ctx.strokeStyle;
+          ctx.beginPath();
+          ctx.moveTo(ax, ay);
+          ctx.lineTo(ax - Math.cos(ang - 0.35) * 9, ay - Math.sin(ang - 0.35) * 9);
+          ctx.lineTo(ax - Math.cos(ang + 0.35) * 9, ay - Math.sin(ang + 0.35) * 9);
+          ctx.closePath();
+          ctx.fill();
+        });
+
+        // Nodes
+        const mastered = window.NotebookState.get().mastered;
+        nodes.forEach((n) => {
+          const isSel = n.id === selectedId;
+          const isMast = mastered.includes(n.id);
+          ctx.fillStyle = isLight ? "#ffffff" : "#161c2a";
+          ctx.strokeStyle = isSel ? "#f9c846" : (isMast ? "#83c167" : n.color);
+          ctx.lineWidth = isSel ? 3.2 : 2;
+          ctx.beginPath();
+          ctx.roundRect(n.x - 74, n.y - 28, 148, 56, 12);
+          ctx.fill();
+          ctx.stroke();
+
+          ctx.fillStyle = isLight ? "#111827" : "#eef2f7";
+          ctx.font = "600 11.5px 'Fira Sans', sans-serif";
+          ctx.textAlign = "center";
+          const lines = n.label.split("\n");
+          ctx.fillText(lines[0], n.x, n.y - 4);
+          if (lines[1]) {
+            ctx.fillStyle = isLight ? "#4b5563" : "#9aa7bd";
+            ctx.font = "500 10.5px 'Fira Code', monospace";
+            ctx.fillText(lines[1], n.x, n.y + 14);
+          }
+        });
+        ctx.textAlign = "left";
+      }
+
+      canvas.addEventListener("click", (e) => {
+        const r = canvas.getBoundingClientRect();
+        const px = ((e.clientX - r.left) / r.width) * W;
+        const py = ((e.clientY - r.top) / r.height) * H;
+        const hit = nodes.find((n) => Math.abs(px - n.x) <= 76 && Math.abs(py - n.y) <= 30);
+        if (hit) selectNode(hit.id);
+      });
+
+      document.getElementById("nodeChipList").innerHTML = nodes
+        .map((n) => `<button class="game-chip n-chip" type="button" data-id="${n.id}">${n.label.replace("\n", " · ")}</button>`)
+        .join("");
+      document.querySelectorAll(".n-chip").forEach((b) => b.addEventListener("click", () => selectNode(b.dataset.id)));
+      window.addEventListener("themechange", draw);
+      selectNode("causal-filters");
+    })();
+  </script>
+</body>
+</html>
