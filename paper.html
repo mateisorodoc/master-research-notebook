@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Paper Companion — Step-by-Step main.tex Walkthrough</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <a class="skip-link" href="#mainContent">Skip to content</a>
+
+  <header class="topbar">
+    <a class="brand-link" href="index.html">
+      <span class="brand-mark" aria-hidden="true">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+          <circle cx="12" cy="12" r="9"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><circle cx="9" cy="10" r="1"/><circle cx="15" cy="10" r="1"/>
+        </svg>
+      </span>
+      <span>Affective Control Lab</span>
+    </a>
+
+    <nav class="desktop-nav" aria-label="Main navigation">
+      <a class="nav-item" href="index.html">Home</a>
+      <a class="nav-item" href="paper.html" aria-current="page">Paper (main.tex)</a>
+      <a class="nav-item" href="learn.html">Learn (10 Packs)</a>
+      <a class="nav-item" href="games.html">Arcade</a>
+      <a class="nav-item" href="map.html">Knowledge Map</a>
+      <a class="nav-item" href="glossary.html">Glossary</a>
+      <a class="nav-item" href="roadmap.html">Roadmap</a>
+    </nav>
+
+    <div class="hud-group">
+      <span class="hud-pill xp" id="hudXp">0 XP</span>
+      <span class="hud-pill" id="hudStreak">0 Streak</span>
+      <button id="themeToggleBtn" class="btn btn-sm" type="button" aria-pressed="false" aria-label="Toggle light or dark theme">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <main id="mainContent" class="page-wrap" tabindex="-1">
+    <div style="display:flex; flex-wrap:wrap; justify-content:space-between; align-items:flex-start; gap:12px; margin-bottom:10px;">
+      <div>
+        <h1 style="margin-bottom:6px;">Interactive Paper Companion (<code>main.tex</code>)</h1>
+        <p class="muted" style="margin:0;">
+          Follow our Elsevier <em>Biomedical Signal Processing and Control</em> manuscript paragraph-by-paragraph: what the paper says, plain-English translation, equation X-rays, defense Q&amp;A, and all 26 cited studies.
+        </p>
+      </div>
+    </div>
+
+    <!-- 4-Mode Switcher (Swipeable on Mobile) -->
+    <div class="pack-tabs" role="tablist" aria-label="Paper companion modes">
+      <button class="btn btn-sm pmode-btn" type="button" data-pm="reader" aria-pressed="true">1. Step-by-Step main.tex Reader (10 Sections)</button>
+      <button class="btn btn-sm pmode-btn" type="button" data-pm="xray" aria-pressed="false">2. Equation X-Ray &amp; 63s Trial Trace</button>
+      <button class="btn btn-sm pmode-btn" type="button" data-pm="defense" aria-pressed="false">3. Professor / Reviewer Defense Q&amp;A (8)</button>
+      <button class="btn btn-sm pmode-btn" type="button" data-pm="lit" aria-pressed="false">4. All 26 Cited Papers Explorer</button>
+    </div>
+
+    <!-- MODE 1: Step-by-Step Annotated Manuscript Reader -->
+    <section id="paneReader">
+      <div id="paperSecRail" class="concept-rail" aria-label="Jump to paper section"></div>
+      <div id="paperSectionsList"></div>
+    </section>
+
+    <!-- MODE 2: Interactive Equation X-Ray & 63-Second Trial Data Trace -->
+    <section id="paneXray" hidden>
+      <div class="surface">
+        <h2>Interactive Equation "X-Ray" — Tap Any Symbol Token</h2>
+        <p class="muted">Tap any symbol chip below to inspect its plain-English meaning, exact physical units, and the line of Python code in <code>src/</code> that computes it.</p>
+        <div id="xrayList"></div>
+      </div>
+
+      <div class="surface">
+        <h2>Follow One 63-Second DEAP Trial (<code>s01.dat</code>, Trial 1) — End-to-End Trace</h2>
+        <p class="muted">Scrub or tap through all 6 stages of a single 63.0 s recording (`8,064 samples @ 128 Hz`) to see how raw microvolts become 2D state estimates and 3-actuator commands.</p>
+        <div id="traceStageRail" class="concept-rail" role="tablist" aria-label="Trial stages"></div>
+        <div id="traceStageDetail" class="surface-lab"></div>
+      </div>
+    </section>
+
+    <!-- MODE 3: Professor / Reviewer Defense Q&A Simulator -->
+    <section id="paneDefense" hidden>
+      <div class="surface">
+        <div style="display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:8px; margin-bottom:10px;">
+          <h2 style="margin:0;">Professor &amp; Reviewer Oral Defense Simulator</h2>
+          <span class="tag tag-gold">+15 XP per Mastered Defense</span>
+        </div>
+        <p class="muted">Read each tough committee/reviewer question, formulate your answer in your head, then tap <strong>Reveal Bulletproof Defense Answer</strong>.</p>
+        <div id="defenseCardsList"></div>
+      </div>
+    </section>
+
+    <!-- MODE 4: All 26 Cited Papers Explorer (Literature Matrix) -->
+    <section id="paneLit" hidden>
+      <div class="surface">
+        <h2>All 26 Verified Cited Papers in <code>references.bib</code></h2>
+        <p class="muted">Every reference audited against its primary PDF in <code>docs/CLAIMS_EVIDENCE_MATRIX.md</code>: cohort size ($N$), what they proved, their limitation, and how <code>main.tex</code> uses them.</p>
+        <div style="display:flex; flex-wrap:wrap; gap:10px; margin-bottom:12px;">
+          <input id="litSearch" type="search" placeholder="Search author, year, topic, or BibTeX key (press /)..." aria-label="Search 26 cited papers"
+            style="flex:1; min-width:220px; min-height:44px; padding:10px 14px; border-radius:var(--radius-sm); border:1px solid var(--border); background:var(--bg-code); color:var(--text); font-family:var(--font-sans); font-size:14.5px;" />
+        </div>
+        <div id="litCatChips" class="chip-bank" role="group" aria-label="Filter papers by role"></div>
+        <div id="litGrid" class="grid-2"></div>
+      </div>
+    </section>
+  </main>
+
+  <nav class="mobile-bottom-nav" aria-label="Mobile navigation">
+    <a class="bottom-tab" href="index.html">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+      <span>Home</span>
+    </a>
+    <a class="bottom-tab" href="paper.html" aria-current="page">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+      <span>Paper</span>
+    </a>
+    <a class="bottom-tab" href="learn.html">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+      <span>Learn</span>
+    </a>
+    <a class="bottom-tab" href="games.html">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+      <span>Arcade</span>
+    </a>
+    <a class="bottom-tab" href="map.html">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="6" cy="6" r="3"/><circle cx="18" cy="18" r="3"/><circle cx="18" cy="6" r="3"/><line x1="8.5" y1="7.5" x2="15.5" y2="16.5"/><line x1="9" y1="6" x2="15" y2="6"/></svg>
+      <span>Map</span>
+    </a>
+    <a class="bottom-tab" href="glossary.html">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="14" y2="18"/></svg>
+      <span>Glossary</span>
+    </a>
+  </nav>
+
+  <script src="notebook-data.js"></script>
+  <script src="paper-data.js"></script>
+  <script src="shared.js"></script>
+  <script>
+    (function () {
+      const P = window.PAPER_DATA;
+      const NB = window.NOTEBOOK_DATA;
+      const State = window.NotebookState;
+      if (!P || !State) return;
+
+      const panes = {
+        reader: document.getElementById("paneReader"),
+        xray: document.getElementById("paneXray"),
+        defense: document.getElementById("paneDefense"),
+        lit: document.getElementById("paneLit")
+      };
+
+      function switchMode(m) {
+        State.playSound("tap");
+        document.querySelectorAll(".pmode-btn").forEach((b) => {
+          b.setAttribute("aria-pressed", String(b.dataset.pm === m));
+        });
+        Object.entries(panes).forEach(([k, el]) => {
+          el.hidden = k !== m;
+        });
+      }
+
+      document.querySelectorAll(".pmode-btn").forEach((btn) => {
+        btn.addEventListener("click", () => switchMode(btn.dataset.pm));
+      });
+
+      const urlMode = new URLSearchParams(window.location.search).get("mode");
+      if (urlMode && panes[urlMode]) switchMode(urlMode);
+
+      // Helper to look up citation object by key
+      function getCit(key) {
+        return P.citations.find((c) => c.key === key);
+      }
+
+      // ----------------------------------------------------------------------
+      // MODE 1: Step-by-Step Annotated Manuscript Reader
+      // ----------------------------------------------------------------------
+      const secRail = document.getElementById("paperSecRail");
+      const secList = document.getElementById("paperSectionsList");
+
+      secRail.innerHTML = P.sections
+        .map((s) => `<a class="concept-chip" href="#${s.id}" style="text-decoration:none;">${s.badge}</a>`)
+        .join("");
+
+      secList.innerHTML = P.sections
+        .map((s) => {
+          const conceptObj = NB.concepts.find((c) => c.id === s.conceptId);
+          const citChips = s.citations.length
+            ? `<div style="margin-top:12px;">
+                <span class="muted" style="font-size:12px; display:block; margin-bottom:6px;">Tap any cited study in this paragraph to inspect its N, finding &amp; limitation:</span>
+                <div class="chip-bank" style="margin:0;">
+                  ${s.citations
+                    .map((k) => {
+                      const co = getCit(k);
+                      const label = co ? `${co.authors.split(",")[0]} (${co.year})` : k;
+                      return `<button class="btn btn-sm cit-pill" type="button" data-sec="${s.id}" data-ckey="${k}">[${label}]</button>`;
+                    })
+                    .join("")}
+                </div>
+                <div id="citDrawer_${s.id}" class="note-box" hidden style="margin-top:10px;"></div>
+              </div>`
+            : "";
+
+          return `
+            <article class="surface" id="${s.id}">
+              <div style="display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:8px; margin-bottom:10px;">
+                <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+                  <span class="tag tag-blue">${s.badge}</span>
+                  <code style="font-size:12px;">${s.lines}</code>
+                </div>
+                <a class="btn btn-primary btn-sm" href="learn.html?concept=${s.conceptId}">
+                  Open Connected Lab: ${conceptObj ? conceptObj.title : s.conceptId} →
+                </a>
+              </div>
+
+              <h2 style="margin-bottom:12px;">${s.title}</h2>
+
+              <div class="grid-2" style="align-items:start;">
+                <div class="surface-lab" style="margin:0;">
+                  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                    <strong style="color:var(--b1b-gold); font-size:13px; font-family:var(--font-mono);">WHAT THE PAPER SAYS (main.tex)</strong>
+                  </div>
+                  <p style="font-size:14px; line-height:1.68; margin:0; font-style:italic;">"${s.paperQuote}"</p>
+                </div>
+
+                <div>
+                  <div class="depth-tier-card tier-1">
+                    <strong style="color:var(--b1b-blue); font-size:13px; font-family:var(--font-mono); display:block; margin-bottom:8px;">PLAIN-ENGLISH TRANSLATION &amp; BREAKDOWN</strong>
+                    <div class="pipeline-steps" style="margin:0;">
+                      ${s.plainEnglish.map((line) => `<div class="pipeline-step-row">${line}</div>`).join("")}
+                    </div>
+                  </div>
+                  <div class="note-box warn" style="margin-top:10px; margin-bottom:0;">
+                    <strong>Why Elsevier BSPC Reviewers Care:</strong>
+                    <p style="margin:4px 0 0; font-size:13.5px;">${s.reviewerWhy}</p>
+                    <p class="muted" style="margin:6px 0 0; font-size:12px;"><strong>Verified Workspace Artifact:</strong> <code>${s.codeRef}</code></p>
+                  </div>
+                </div>
+              </div>
+
+              ${citChips}
+            </article>
+          `;
+        })
+        .join("");
+
+      secList.querySelectorAll(".cit-pill").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          State.playSound("tap");
+          const secId = btn.dataset.sec;
+          const k = btn.dataset.ckey;
+          const co = getCit(k);
+          const drawer = document.getElementById(`citDrawer_${secId}`);
+          if (!co || !drawer) return;
+          drawer.hidden = false;
+          drawer.innerHTML = `
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:8px; flex-wrap:wrap;">
+              <strong>${co.authors} (${co.year}) — ${co.title}</strong>
+              <span class="tag tag-gold">${co.sampleSize}</span>
+            </div>
+            <p class="muted" style="font-size:12.5px; margin:4px 0 8px;"><em>${co.venue}</em> · DOI/ID: <code>${co.doi}</code></p>
+            <div class="pipeline-steps" style="margin:0;">
+              <div class="pipeline-step-row"><strong>What They Proved:</strong> ${co.proved}</div>
+              <div class="pipeline-step-row"><strong>Their Limitation (The Gap):</strong> ${co.limitation}</div>
+              <div class="pipeline-step-row"><strong>How Our Paper Uses It:</strong> ${co.howWeUseIt}</div>
+            </div>
+          `;
+        });
+      });
+
+      // ----------------------------------------------------------------------
+      // MODE 2: Interactive Equation X-Ray & 63s Trial Data Trace
+      // ----------------------------------------------------------------------
+      const xrayList = document.getElementById("xrayList");
+      xrayList.innerHTML = P.equationXrays
+        .map(
+          (eq, eqIdx) => `
+          <div class="surface-lab" data-eqi="${eqIdx}">
+            <h3>${eq.title}</h3>
+            <div class="math-block" style="font-size:16px; font-weight:700; text-align:center;">${eq.latexDisplay}</div>
+            <p class="muted" style="font-size:13px; margin-bottom:8px;">Tap any symbol token below to X-Ray its meaning, units, and Python code:</p>
+            <div class="chip-bank">
+              ${eq.tokens
+                .map(
+                  (t, ti) =>
+                    `<button class="game-chip xray-tok ${ti === 0 ? "selected" : ""}" type="button" data-eqi="${eqIdx}" data-ti="${ti}">${t.sym}</button>`
+                )
+                .join("")}
+            </div>
+            <div class="note-box" id="xrayDetail_${eqIdx}"></div>
+          </div>
+        `
+        )
+        .join("");
+
+      function renderXrayToken(eqIdx, ti) {
+        const t = P.equationXrays[eqIdx].tokens[ti];
+        const box = document.getElementById(`xrayDetail_${eqIdx}`);
+        if (!box || !t) return;
+        box.innerHTML = `
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:6px;">
+            <strong style="font-size:15px;">Symbol: <code>${t.sym}</code> — ${t.name}</strong>
+            <span class="tag tag-green">Units: ${t.units}</span>
+          </div>
+          <p style="margin:6px 0;">${t.meaning}</p>
+          <p class="muted" style="margin:0; font-size:13px;"><strong>Exact Code Line:</strong> <code>${t.code}</code></p>
+        `;
+      }
+
+      P.equationXrays.forEach((_, eqIdx) => renderXrayToken(eqIdx, 0));
+
+      xrayList.querySelectorAll(".xray-tok").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          State.playSound("tap");
+          const eqIdx = parseInt(btn.dataset.eqi, 10);
+          const ti = parseInt(btn.dataset.ti, 10);
+          xrayList
+            .querySelectorAll(`.xray-tok[data-eqi="${eqIdx}"]`)
+            .forEach((b) => b.classList.toggle("selected", parseInt(b.dataset.ti, 10) === ti));
+          renderXrayToken(eqIdx, ti);
+        });
+      });
+
+      // 63-Second Trial Data Trace
+      const traceRail = document.getElementById("traceStageRail");
+      const traceDetail = document.getElementById("traceStageDetail");
+      let activeTraceIdx = 0;
+
+      function renderTraceStage(idx) {
+        activeTraceIdx = idx;
+        const stg = P.trialTrace[idx];
+        traceRail.innerHTML = P.trialTrace
+          .map(
+            (x, i) =>
+              `<button class="concept-chip" role="tab" aria-selected="${i === idx}" data-tri="${i}">${x.time}</button>`
+          )
+          .join("");
+        traceRail.querySelectorAll(".concept-chip").forEach((b) => {
+          b.addEventListener("click", () => {
+            State.playSound("tap");
+            renderTraceStage(parseInt(b.dataset.tri, 10));
+          });
+        });
+
+        traceDetail.innerHTML = `
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:8px;">
+            <h3 style="margin:0;">${stg.stage}</h3>
+            <span class="tag tag-blue">${stg.paperRef}</span>
+          </div>
+          <div class="math-block">${stg.shape}</div>
+          <p style="margin:8px 0 12px;">${stg.whatHappens}</p>
+          <div style="display:flex; gap:8px;">
+            <button class="btn btn-sm" type="button" id="prevTraceBtn">← Prev Timestamp</button>
+            <button class="btn btn-primary btn-sm" type="button" id="nextTraceBtn">Next Timestamp →</button>
+          </div>
+        `;
+        document.getElementById("prevTraceBtn").addEventListener("click", () => {
+          State.playSound("tap");
+          renderTraceStage((idx - 1 + P.trialTrace.length) % P.trialTrace.length);
+        });
+        document.getElementById("nextTraceBtn").addEventListener("click", () => {
+          State.playSound("tap");
+          renderTraceStage((idx + 1) % P.trialTrace.length);
+        });
+      }
+      renderTraceStage(0);
+
+      // ----------------------------------------------------------------------
+      // MODE 3: Professor / Reviewer Defense Q&A Simulator
+      // ----------------------------------------------------------------------
+      const defList = document.getElementById("defenseCardsList");
+      const revealedSet = new Set();
+      defList.innerHTML = P.defenseQA
+        .map(
+          (d, di) => `
+          <div class="surface-lab" data-di="${di}">
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:8px; flex-wrap:wrap; margin-bottom:8px;">
+              <strong style="font-size:15.5px;">${d.q}</strong>
+              <span class="tag tag-coral">Committee / Reviewer Q${di + 1}</span>
+            </div>
+            <p class="muted" style="font-size:13px; margin:0 0 10px;"><strong>Core Thesis Hook:</strong> ${d.shortHook}</p>
+            <button class="btn btn-sm def-rev-btn" type="button" data-di="${di}">Reveal Bulletproof Defense Answer (+15 XP)</button>
+            <div class="note-box good def-ans" id="defAns_${di}" hidden style="margin-top:12px;">
+              <strong>Bulletproof Answer:</strong>
+              <p style="margin:6px 0;">${d.answer}</p>
+              <p class="muted" style="margin:0; font-size:12.5px;"><strong>Manuscript &amp; Audit Proof:</strong> <code>${d.evidence}</code></p>
+            </div>
+          </div>
+        `
+        )
+        .join("");
+
+      defList.querySelectorAll(".def-rev-btn").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const di = parseInt(btn.dataset.di, 10);
+          const ansEl = document.getElementById(`defAns_${di}`);
+          if (ansEl) ansEl.hidden = !ansEl.hidden;
+          if (!revealedSet.has(di)) {
+            revealedSet.add(di);
+            State.awardXP(15, `Defense Q${di + 1}`);
+            btn.textContent = "✓ Defense Answer Revealed (Tap to Toggle)";
+          } else {
+            State.playSound("tap");
+          }
+        });
+      });
+
+      // ----------------------------------------------------------------------
+      // MODE 4: All 26 Cited Papers Explorer
+      // ----------------------------------------------------------------------
+      const litCats = ["All 26", ...new Set(P.citations.map((c) => c.group))];
+      let activeLitCat = "All 26";
+      const litChipsEl = document.getElementById("litCatChips");
+      const litGridEl = document.getElementById("litGrid");
+      const litSearchEl = document.getElementById("litSearch");
+
+      litChipsEl.innerHTML = litCats
+        .map(
+          (cat) =>
+            `<button class="btn btn-sm lcat-btn" type="button" data-cat="${cat}" aria-pressed="${cat === "All 26"}">${cat}</button>`
+        )
+        .join("");
+
+      function renderLit() {
+        const q = litSearchEl.value.trim().toLowerCase();
+        const filtered = P.citations.filter((c) => {
+          const catOk = activeLitCat === "All 26" || c.group === activeLitCat;
+          const qOk =
+            !q ||
+            c.key.toLowerCase().includes(q) ||
+            c.authors.toLowerCase().includes(q) ||
+            c.title.toLowerCase().includes(q) ||
+            c.proved.toLowerCase().includes(q) ||
+            c.howWeUseIt.toLowerCase().includes(q);
+          return catOk && qOk;
+        });
+
+        litGridEl.innerHTML = filtered.length
+          ? filtered
+              .map(
+                (c) => `
+              <div class="surface-lab" style="margin:0; display:flex; flex-direction:column; justify-content:space-between; gap:10px;">
+                <div>
+                  <div style="display:flex; justify-content:space-between; align-items:center; gap:6px; flex-wrap:wrap; margin-bottom:6px;">
+                    <span class="tag tag-blue">${c.group}</span>
+                    <code style="font-size:11.5px;">\\cite{${c.key}}</code>
+                  </div>
+                  <h3 style="margin-bottom:4px;">${c.authors} (${c.year})</h3>
+                  <p style="font-weight:600; font-size:14px; margin:0 0 4px;">${c.title}</p>
+                  <p class="muted" style="font-size:12px; margin:0 0 10px;">${c.venue} · <strong>${c.sampleSize}</strong></p>
+                  <div class="pipeline-steps" style="margin:0;">
+                    <div class="pipeline-step-row"><strong>Proved:</strong> ${c.proved}</div>
+                    <div class="pipeline-step-row"><strong>Limitation / Gap:</strong> ${c.limitation}</div>
+                    <div class="pipeline-step-row"><strong>Role in main.tex:</strong> ${c.howWeUseIt}</div>
+                  </div>
+                </div>
+              </div>
+            `
+              )
+              .join("")
+          : `<p class="muted">No cited papers match "${q}".</p>`;
+      }
+
+      litChipsEl.querySelectorAll(".lcat-btn").forEach((b) => {
+        b.addEventListener("click", () => {
+          State.playSound("tap");
+          activeLitCat = b.dataset.cat;
+          litChipsEl
+            .querySelectorAll(".lcat-btn")
+            .forEach((x) => x.setAttribute("aria-pressed", String(x.dataset.cat === activeLitCat)));
+          renderLit();
+        });
+      });
+      litSearchEl.addEventListener("input", renderLit);
+      renderLit();
+    })();
+  </script>
+</body>
+</html>

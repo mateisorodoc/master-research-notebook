@@ -186,8 +186,30 @@
       `;
     }
 
+    const P = window.PAPER_DATA;
+    const anchor = P && P.conceptPaperAnchors && P.conceptPaperAnchors[c.id];
+    const paperCardHtml = anchor
+      ? `
+      <div class="surface-lab" style="margin-top:14px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:6px;">
+          <strong style="color:var(--b1b-gold);">In the Research Paper (<code>main.tex</code>)</strong>
+          <span class="tag tag-gold">${anchor.secLabel}</span>
+        </div>
+        <p style="font-size:14px; margin:6px 0 10px;">${anchor.roleInPaper}</p>
+        <div style="display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:8px;">
+          <div style="display:flex; flex-wrap:wrap; gap:5px;">
+            ${(anchor.keyCitations || [])
+              .map((k) => `<code style="font-size:11.5px;">\\cite{${k}}</code>`)
+              .join("")}
+          </div>
+          <a class="btn btn-sm" href="paper.html#${anchor.secId}">Read in Paper Companion →</a>
+        </div>
+      </div>`
+      : "";
+
     tabTheory.innerHTML = `
       ${html}
+      ${paperCardHtml}
       <div style="display:flex; flex-wrap:wrap; gap:8px; margin-top:14px;">
         <button class="btn btn-sm" type="button" id="cycleDepthInlineBtn">Switch Depth Tier (Level ${(lvl % 3) + 1}) →</button>
         <button class="btn btn-primary btn-sm" type="button" id="scrollCheckBtn">Jump to 3-Stage Mastery Check ↓</button>

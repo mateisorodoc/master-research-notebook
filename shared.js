@@ -318,18 +318,40 @@
       });
     }
 
-    // Ensure mobile bottom nav includes Roadmap tab on every page
+    // Ensure desktop-nav and mobile-bottom-nav include Paper (main.tex) and Roadmap on every page
+    const dNav = document.querySelector(".desktop-nav");
+    if (dNav && !dNav.querySelector('a[href="paper.html"]')) {
+      const pa = document.createElement("a");
+      pa.className = "nav-item";
+      pa.href = "paper.html";
+      pa.textContent = "Paper (main.tex)";
+      const homeLink = dNav.querySelector('a[href="index.html"]');
+      if (homeLink && homeLink.nextSibling) dNav.insertBefore(pa, homeLink.nextSibling);
+      else dNav.appendChild(pa);
+    }
+
     const bNav = document.querySelector(".mobile-bottom-nav");
-    if (bNav && !bNav.querySelector('a[href="roadmap.html"]')) {
-      const a = document.createElement("a");
-      a.className = "bottom-tab";
-      a.href = "roadmap.html";
-      if (window.location.pathname.endsWith("roadmap.html")) {
-        a.setAttribute("aria-current", "page");
+    if (bNav) {
+      if (!bNav.querySelector('a[href="paper.html"]')) {
+        const pa = document.createElement("a");
+        pa.className = "bottom-tab";
+        pa.href = "paper.html";
+        if (window.location.pathname.endsWith("paper.html")) pa.setAttribute("aria-current", "page");
+        pa.innerHTML =
+          '<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg><span>Paper</span>';
+        const homeTab = bNav.querySelector('a[href="index.html"]');
+        if (homeTab && homeTab.nextSibling) bNav.insertBefore(pa, homeTab.nextSibling);
+        else bNav.appendChild(pa);
       }
-      a.innerHTML =
-        '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg><span>Roadmap</span>';
-      bNav.appendChild(a);
+      if (!bNav.querySelector('a[href="roadmap.html"]')) {
+        const a = document.createElement("a");
+        a.className = "bottom-tab";
+        a.href = "roadmap.html";
+        if (window.location.pathname.endsWith("roadmap.html")) a.setAttribute("aria-current", "page");
+        a.innerHTML =
+          '<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg><span>Roadmap</span>';
+        bNav.appendChild(a);
+      }
     }
 
     // Global Desktop Keyboard Shortcuts (D = depth, M = mute, / = search)
