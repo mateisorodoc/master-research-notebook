@@ -159,18 +159,19 @@ A common failure in educational web apps is making mobile users scroll up and do
   }
 }
 
-/* Mobile (< 768px): Sticky Compact Canvas Viewport Above Sliders */
-@media (max-width: 767px) {
+/* Mobile (< 1024px): Clean Vertical Stack, Single-Row Touch Carousels, Zero Overlapping Sticky Canvas */
+@media (max-width: 1023px) {
+  .studio-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
   .lab-canvas-sticky {
-    position: sticky;
-    top: 58px;
-    z-index: 15;
-    background: var(--bg-card);
-    padding-bottom: 8px;
-    border-bottom: 1px solid var(--border);
+    position: relative; /* Never overlap/cover sliders or quiz cards below! */
+    top: auto;
   }
   main {
-    padding-bottom: 92px; /* Clear the fixed bottom tab bar */
+    padding-bottom: 96px; /* Clear the fixed bottom tab bar */
   }
 }
 ```

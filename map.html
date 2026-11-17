@@ -44,7 +44,12 @@
     <p class="muted">See how every piece of the thesis connects—from raw DEAP recordings to causal filters, state-space estimation, three actuators, and closed-loop control. Tap any node to inspect its connections.</p>
 
     <section class="surface" style="padding: 14px;">
-      <canvas id="graphCanvas" class="stage-canvas" width="1000" height="400" aria-label="Interactive research knowledge graph"></canvas>
+      <div class="map-scroll-wrap">
+        <canvas id="graphCanvas" class="stage-canvas" width="1000" height="400" aria-label="Interactive research knowledge graph"></canvas>
+      </div>
+      <p class="muted" style="font-size:12px; margin:8px 0 0; text-align:center;">
+        Tip: On mobile, swipe left/right to pan the diagram or tap any node chip below.
+      </p>
     </section>
 
     <section class="surface" id="nodeInspector" aria-live="polite">

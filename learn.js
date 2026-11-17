@@ -433,7 +433,7 @@
       document.getElementById("rVaErr").textContent = `${err.toFixed(2)} (${mode === "closed" ? "120 steps @ 0.5 s" : "Open-Loop Unsteered"})`;
     }
 
-    canvas.addEventListener("click", (e) => {
+    canvas.addEventListener("pointerdown", (e) => {
       const rct = canvas.getBoundingClientRect();
       const px = ((e.clientX - rct.left) / rct.width) * W;
       const py = ((e.clientY - rct.top) / rct.height) * H;

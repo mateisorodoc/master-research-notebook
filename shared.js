@@ -236,7 +236,8 @@
     const xpEl = document.getElementById("hudXp");
     const strEl = document.getElementById("hudStreak");
     const mult = comboMultiplier(st.combo || 0);
-    if (xpEl) xpEl.textContent = `${st.xp} XP · ${computeRank(st)}`;
+    const isNarrow = window.innerWidth < 480;
+    if (xpEl) xpEl.textContent = isNarrow ? `${st.xp} XP` : `${st.xp} XP · ${computeRank(st)}`;
     if (strEl) strEl.textContent = mult > 1 ? `${st.streak} Streak (${mult}x)` : `${st.streak} Streak`;
   }
 
@@ -289,7 +290,9 @@
         const m = loadProgress().muted;
         muteBtn.setAttribute("aria-pressed", String(m));
         muteBtn.setAttribute("aria-label", m ? "Unmute sound effects" : "Mute sound effects");
-        muteBtn.textContent = m ? "Muted" : "Sound";
+        muteBtn.innerHTML = m
+          ? '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>'
+          : '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>';
       };
       syncMute();
       muteBtn.addEventListener("click", () => {
@@ -313,6 +316,20 @@
         playSound("tap");
         window.dispatchEvent(new CustomEvent("themechange"));
       });
+    }
+
+    // Ensure mobile bottom nav includes Roadmap tab on every page
+    const bNav = document.querySelector(".mobile-bottom-nav");
+    if (bNav && !bNav.querySelector('a[href="roadmap.html"]')) {
+      const a = document.createElement("a");
+      a.className = "bottom-tab";
+      a.href = "roadmap.html";
+      if (window.location.pathname.endsWith("roadmap.html")) {
+        a.setAttribute("aria-current", "page");
+      }
+      a.innerHTML =
+        '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg><span>Roadmap</span>';
+      bNav.appendChild(a);
     }
 
     // Global Desktop Keyboard Shortcuts (D = depth, M = mute, / = search)

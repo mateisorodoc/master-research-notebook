@@ -237,7 +237,7 @@
       }));
       const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-      canvas.addEventListener("click", (e) => {
+      canvas.addEventListener("pointerdown", (e) => {
         const r = canvas.getBoundingClientRect();
         goal.x = ((e.clientX - r.left) / r.width) * W;
         goal.y = ((e.clientY - r.top) / r.height) * H;
