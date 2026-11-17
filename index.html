@@ -77,6 +77,14 @@
         <div class="readout-cell">Causality &amp; Tests<strong>0.0 Leak · 18/18 Pass</strong></div>
       </div>
 
+      <div style="margin-top: 16px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+          <strong style="font-size:14px;">Explore 5 Distinct Design Worlds (Impeccable Directions · Dark &amp; Light)</strong>
+          <span class="muted" style="font-size:12px;">Changes typography, geometry, surface texture &amp; palette</span>
+        </div>
+        <div class="world-strip" id="worldGalleryStrip"></div>
+      </div>
+
       <div class="grid-2" style="margin-top: 16px;">
         <div class="note-box" id="weakReviewCard" style="margin:0;"></div>
         <div class="note-box warn" id="capstoneHomeCard" style="margin:0;"></div>
@@ -124,8 +132,35 @@
         document.getElementById("masteryCountBadge").textContent =
           `${st.mastered.length} / ${DATA.concepts.length} Concepts Mastered`;
         document.getElementById("missionCountBadge").textContent =
-          `${(st.labMissionsCleared || []).length} Lab Missions Cleared`;
+          `${(st.labMissionsCleared || []).length} / 20 Lab Missions Cleared`;
         document.getElementById("homeRankVal").textContent = State.getRank();
+
+        const worlds = [
+          { id: "1", tag: "THEATER · 14px", name: "3b1b Cinema", desc: "Velvety midnight, serif math display & luminous vectors", colors: ["#0b0e14", "#58c4dd", "#f9c846", "#83c167"] },
+          { id: "2", tag: "GRAPHIC · 0px HUD", name: "Starship Crew Terminal", desc: "All-monospace telemetry, sharp 0px corners & tactical grid", colors: ["#040906", "#00ff88", "#ffb000", "#38bdf8"] },
+          { id: "3", tag: "ATMOSPHERE · 2px FOLD", name: "Miura Fold Sheet", desc: "Crisp origami paper crease, 4px fold shadow & vermilion ink", colors: ["#f3efe6", "#ff5a36", "#e5b842", "#38b2ac"] },
+          { id: "4", tag: "INTERACTION · 6px BEZEL", name: "VU Meter Bridge", desc: "Studio hardware chassis, recessed meters & 3D tactile switches", colors: ["#181512", "#ff6b2b", "#f5b82e", "#68d391"] },
+          { id: "5", tag: "ORGANIC · 22px BASIN", name: "Shallow Basin", desc: "Bioluminescent pelagic ink, flowing 22px contours & aqua glow", colors: ["#060d18", "#00e5ff", "#2dd4bf", "#ff5c77"] }
+        ];
+        const wStrip = document.getElementById("worldGalleryStrip");
+        if (wStrip) {
+          wStrip.innerHTML = worlds.map((w) => `
+            <button class="world-card" type="button" data-wp="${w.id}" aria-pressed="${(st.themePair || "1") === w.id}">
+              <div class="world-swatches">
+                ${w.colors.map((col) => `<span class="world-swatch" style="background:${col};"></span>`).join("")}
+              </div>
+              <div class="muted" style="font-size:10.5px; font-family:var(--font-mono);">${w.tag}</div>
+              <div style="font-weight:700; font-size:14px; margin:2px 0;">${w.name}</div>
+              <div class="muted" style="font-size:12px; line-height:1.35;">${w.desc}</div>
+            </button>
+          `).join("");
+          wStrip.querySelectorAll(".world-card").forEach((btn) => {
+            btn.addEventListener("click", () => {
+              State.setThemePair(btn.dataset.wp);
+              renderHomeDashboard();
+            });
+          });
+        }
 
         const missed = st.missedQuestions || [];
         const revEl = document.getElementById("weakReviewCard");

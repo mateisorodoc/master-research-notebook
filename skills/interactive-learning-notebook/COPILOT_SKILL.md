@@ -42,8 +42,13 @@ Adapt to **any subject matter, human language, or learner background**:
    - **Mobile (`< 768px`):** Fixed bottom tab bar (`<= 5` tabs), `>= 44×44px` tap targets, and **sticky compact `<canvas>` viewport** above lab sliders so users never scroll up and down on their phone to see a slider's effect.
    - **Desktop (`>= 1024px`):** Split-studio layout on `learn.html` (Theory & Depth switcher on the left, live Interactive Lab + Missions pinned on the right) + full keyboard shortcuts (`1–4`, `Enter`, `J/K`, `D`, `M`, `/`).
    - **Craft Floor Bans:** No eyebrow/kicker labels above headings, no gradient text, no emoji as UI chrome icons (use crisp inline `<svg>`), no ghost cards (border OR shadow, never both).
-6. **Zero-to-Hero Learning Mechanics Built In:**
-   - **3-Tier Adaptive Depth Switcher** (`1. Intuition` ↔ `2. Practitioner` ↔ `3. Mastery`) per concept and globally.
+6. **Zero-to-Hero Learning Mechanics & Strict 1:1 Alignment Built In:**
+   - **Strict 1:1 Alignment (`Theory ↔ Dedicated Lab ↔ Mastery Check`):** Every concept ($1 \dots N$) MUST have its own **dedicated, concept-specific Interactive Lab** ($N$ concepts = $N$ distinct labs; never share a generic lab across concepts). Nothing in Theory may be omitted in the Lab, and **100% of Mastery Check questions (`Tier 1 Warm-Up`, `Tier 2 + Lab`, `Tier 3 Boss Check`) must test strictly what was taught in that concept's Theory and Lab**.
+   - **3 Radically Distinct Depth Tiers:** Never reuse the same paragraph across depth levels!
+     - `Level 1 (Intuition / ELI12)`: Story-driven analogy, zero jargon, *"Why Naive Approaches Fail"*, and *"Hands-On Lab Connection"*.
+     - `Level 2 (Practitioner Pipeline)`: 4-stage numbered execution pipeline, concrete parameter trade-offs, and *"Lab Mission Guide"*.
+     - `Level 3 (Mastery / Formal)`: Exact equations/rules, symbol-by-symbol variable dictionary, and verified file/method walkthrough + audit proof.
+   - **5 Distinct Impeccable Design Worlds (Not Just Hex Color Swaps):** Each theme (`01 · 3b1b Cinema`, `02 · Starship Crew Terminal`, `03 · Miura Fold Sheet`, `04 · VU Meter Bridge`, `05 · Shallow Basin`) transforms typography, corner radii (`0px` HUD vs `2px` origami fold vs `6px` hardware bezel vs `14px` theater vs `22px` organic basin), surface texture, and button/meter chrome in both Dark and Light modes.
    - **Goal-Driven Lab Missions:** Every Interactive Lab includes **2–3 interactive missions** that auto-verify when the learner hits the target state on the canvas/controls and award `+25 XP`.
    - **Tactile Web Audio + Haptics:** Offline Web Audio API synthesizer (`tap`, `correct`, `combo`, `missionClear`, `wrong`) + mobile `navigator.vibrate`, with a persistent 1-tap **Mute** toggle.
    - **Weakest-Concepts Review Queue:** Missed questions automatically enter a `localStorage` review queue surfaced as a **"Quick 3-Min Review"** button on `index.html`.

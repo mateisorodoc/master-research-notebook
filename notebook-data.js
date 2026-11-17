@@ -1,12 +1,14 @@
 /* ==========================================================================
-   MASTER_RESEARCH — Comprehensive Data for Multi-Page Learning Platform
-   All numbers strictly verified from workspace artifacts & primary PDFs.
+   MASTER_RESEARCH — Zero-to-Hero Comprehensive Data
+   - 10 Concepts × 3 Distinct Depth Tiers (Level 1 Intuition, Level 2 Practitioner, Level 3 Mastery)
+   - 10 Dedicated 1:1 Interactive Labs + 20 Auto-Verified Lab Missions
+   - 30 Strictly-Aligned Mastery Checks (0 unintroduced facts; 100% from Theory + Lab)
    ========================================================================== */
 
 window.NOTEBOOK_DATA = {
   meta: {
-    title: "2D Affective Control — Interactive Learning Notebook",
-    lastUpdated: "2026-11-17",
+    title: "2D Affective Control — Zero-to-Hero Learning Platform",
+    lastUpdated: "2026-11-18",
     currentPhase: "Phase 1 Complete — Phase 2 Next",
     testsPassed: "18 / 18 passed (95% coverage)",
     totalWindows: "153,600 valid control steps (1,280 trials × 120 steps @ Δt = 0.5 s)",
@@ -16,273 +18,670 @@ window.NOTEBOOK_DATA = {
   concepts: [
     {
       id: "circumplex",
-      title: "1. 2D Valence–Arousal Space",
+      title: "1. 2D Valence–Arousal & Closed-Loop Control",
       phase: "Phase 0–1",
       tag: "Core Principle",
       labType: "circumplex",
-      summary: "How we map every human emotion onto two continuous axes (Valence & Arousal) and why closed-loop control beats passive detection.",
-      plainEnglish: "Instead of labeling emotions with rigid words like 'angry' or 'happy', Russell's Circumplex Model places your state on a 2D map: Valence (unpleasant to pleasant, left to right) and Arousal (calm/sleepy to excited/stressed, bottom to top). Most BCI studies are open-loop (they only read the map). Our system is closed-loop: like a thermostat, it continuously nudges you toward a target coordinate (V*, A*).",
-      math: "x_k = [Valence_k, Arousal_k]^T ∈ R^2,   Δt = 0.5 s",
-      codeRef: "main.tex §1 (Introduction), Russell (1980)",
+      summary: "Mapping human emotion onto continuous 2D coordinates (Valence, Arousal) and steering it every 0.5 s like a smart thermostat.",
+      level1: {
+        analogy: "Think of a room thermostat: a thermometer alone only tells you 'it is 14°C in here' (Open-Loop detection). A thermostat compares 14°C against your target 22°C and turns on the heater until you reach 22°C (Closed-Loop control). Russell's (1980) Circumplex Model gives emotions a 2D map so our 'emotion thermostat' knows where you are and where to steer you: horizontal Valence (unpleasant -1 to pleasant +1) and vertical Arousal (calm/sleepy -1 to excited/stressed +1).",
+        naiveTrap: "Most Affective BCI papers stop at Open-Loop classification ('you look 78% stressed'). They never close the feedback loop to actively guide your state toward a target like Calm (Quadrant 4: High Valence +, Low Arousal -).",
+        labGuide: "In the Lab on the right, click the 4 Quadrants (Q1 Excite, Q2 Stressed, Q3 Sad, Q4 Calm) and toggle between Open-Loop (passive) and Closed-Loop (active steering every Δt = 0.5 s)."
+      },
+      level2: {
+        pipeline: [
+          "1. Define Target Setpoint x* = [V*, A*]^T in continuous 2D space (e.g., Calm in Q4: V* = +0.75, A* = -0.60).",
+          "2. Sample physiological sensors (EEG, GSR, BVP) on a discrete real-time clock every Δt = 0.5 s (2 Hz control rate).",
+          "3. Compute tracking error e_k = x* - x̂_k between the target quadrant and the estimated emotional state.",
+          "4. Update sensory actuators u_k to drive tracking error e_k → 0 across the 120 control steps of a 60 s stimulus."
+        ],
+        tradeoffs: "Why Δt = 0.5 s? Faster updates (< 0.1 s) are dominated by raw EEG phase noise and cannot speed up slow autonomic sweat/heart responses; slower updates (> 5 s) miss rapid frontal alpha shifts.",
+        labGuide: "Use the Lab to test Mission 1 (select Q4 Calm in Open-Loop to see why passive systems leave error unchanged) and Mission 2 (turn on Closed-Loop to drive tracking error ||e_k|| < 0.10)."
+      },
+      level3: {
+        math: "x_k = [Valence_k, Arousal_k]^T ∈ [-1, 1]^2,   e_k = x* - x̂_k,   Δt = 0.5 s (120 steps / 60 s trial)",
+        variables: [
+          "x_k : True 2D emotional state vector at discrete control step k (Valence horizontal, Arousal vertical).",
+          "x* = [V*, A*]^T : Desired target emotion coordinate in one of the 4 Circumplex quadrants.",
+          "e_k : Instantaneous 2D tracking error vector driving the closed-loop controller.",
+          "Δt = 0.5 s : Discrete control interval (64 samples at 128 Hz)."
+        ],
+        codeWalkthrough: "main.tex §1 (Introduction) & configs/eeg_features.yaml (`window_step_sec: 0.5`). Establishes the 4 canonical regulation trajectories from Daly et al. (2016): De-stress, Calm (Q4: High V, Low A), Make Happy (Q1: High V, High A), and Excite."
+      },
+      codeRef: "main.tex §1, configs/eeg_features.yaml (Δt = 0.5 s), Russell (1980), Daly et al. (2016)",
       trivia: [
         {
-          q: "What is the main difference between an open-loop and a closed-loop Affective BCI?",
+          q: "[Level 1 · Warm-Up] What is the core difference between an Open-Loop and a Closed-Loop Affective BCI?",
           options: [
-            "Open-loop only detects emotion; closed-loop continuously adapts stimuli (music, light, haptics) to steer emotion.",
-            "Open-loop uses 32 EEG channels; closed-loop uses 64.",
-            "Closed-loop only works offline after the experiment ends."
+            "Open-Loop only measures/classifies emotion passively; Closed-Loop continuously adapts stimuli every 0.5 s to drive tracking error toward the target state (V*, A*).",
+            "Open-Loop uses 2D coordinates; Closed-Loop only uses 1D Arousal.",
+            "Closed-Loop only runs after the participant goes home."
           ],
           answer: 0,
-          explain: "Closed-loop control closes the feedback loop: Measure → Estimate State → Adjust Actuators → Repeat every 0.5 s."
+          explain: "Like a thermostat vs. a thermometer, Closed-Loop control measures state x̂_k, computes error e_k = x* - x̂_k, and updates stimuli every Δt = 0.5 s."
         },
         {
-          q: "In Russell's 2D Circumplex Model, what does high Valence + low Arousal represent?",
+          q: "[Level 2 + Lab] In Russell's 2D Circumplex Model, which quadrant corresponds to the 'Calm / Content' target (V* = +0.75, A* = -0.60)?",
           options: [
-            "Stressed / Anxious",
-            "Calm / Content / Relaxed",
-            "Sad / Fatigued"
+            "Quadrant 2: Negative Valence (-), High Arousal (+) — Stressed/Anxious.",
+            "Quadrant 4: Positive Valence (+), Low Arousal (-) — Calm/Relaxed.",
+            "Quadrant 3: Negative Valence (-), Low Arousal (-) — Sad/Fatigued."
           ],
           answer: 1,
-          explain: "High Valence = pleasant, Low Arousal = calm. That's the exact target of our 'Calm' trajectory!"
+          explain: "As shown in the Lab, Quadrant 4 (bottom-right) combines pleasant Positive Valence (+0.75) with low, relaxed Arousal (-0.60)."
+        },
+        {
+          q: "[Level 3 · Boss Check] At our discrete control step Δt = 0.5 s, how many closed-loop control steps occur during the 60 s stimulus window of a single trial?",
+          options: [
+            "60 steps (1 step per second)",
+            "120 steps (60 s / 0.5 s = 120 steps, advancing 64 samples @ 128 Hz per step)",
+            "8,064 steps"
+          ],
+          answer: 1,
+          explain: "60 s / 0.5 s = 120 discrete control steps per trial (and 1,280 trials × 120 steps = 153,600 total valid steps)."
         }
       ]
     },
+
     {
       id: "deap-data",
-      title: "2. DEAP Dataset & SAM Fix",
+      title: "2. DEAP Dataset & Quadrant-1 SAM Fix",
       phase: "Phase 1",
       tag: "DATA-ID",
-      labType: "timeline",
-      summary: "32 participants × 40 one-minute videos at 128 Hz, and how we rescued 439 inverted Quadrant-1 trials.",
-      plainEnglish: "DEAP is our real-world physiological ground truth: 32 people watched 40 music videos (63 s each: 3 s neutral baseline + 60 s video) while 32 EEG + 8 body channels recorded at 128 Hz. During our Phase 1 audit, we caught a hidden bug in DEAP's .dat['labels']: all 439 Quadrant-1 trials (Valence > 5 and Arousal > 5) were stored inverted as (9.0 - rating), turning 9.00 into 0.00! We restored all 1,280 trials from participant_ratings.xls.",
-      math: "Shape = (40 trials, 40 ch, 8064 samples) @ 128 Hz  |  1,280 trials × 120 steps = 153,600 windows",
-      codeRef: "src/data/loader.py → DEAPLoader.load_subject(..., use_metadata_labels=True)",
+      labType: "deap-sam",
+      summary: "32 participants × 40 trials (63 s @ 128 Hz = 8,064 samples) and rescuing 439 inverted Quadrant-1 labels.",
+      level1: {
+        analogy: "Imagine grading 1,280 exams, but whenever a student scores an A+ on both parts (Valence > 5 and Arousal > 5, Quadrant 1), a spreadsheet bug flips their 9.0 score into `9.0 - 9.0 = 0.0`! That exact bug exists inside DEAP's pre-packaged `.dat['labels']` arrays for 439 Quadrant-1 trials. By cross-checking the original `participant_ratings.xls` logbook, we rescued all 439 trials.",
+        naiveTrap: "Training a model directly on raw `.dat['labels']` without checking `participant_ratings.xls` teaches the AI that ecstatic/happy people (9.0) are maximally miserable (0.0)!",
+        labGuide: "In the Lab on the right, toggle between Raw `.dat['labels']` (corrupted Q1) and Restored `participant_ratings.xls` to watch the 439 Quadrant-1 trials snap back to their true positions."
+      },
+      level2: {
+        pipeline: [
+          "1. Verify SHA-256 checksums of all 32 read-only `s01.dat`–`s32.dat` files against `docs/deap_sha256_manifest.json`.",
+          "2. Load tensor shape `(40 trials, 40 channels, 8064 samples)` sampled at 128 Hz (63.0 s total: 3.0 s fixation baseline `0:384` + 60.0 s stimulus `384:8064`).",
+          "3. Match trial order via `Experiment_id` in `participant_ratings.xls` (verified to < 1e-6 against Dominance & Liking).",
+          "4. Replace the 439 inverted Quadrant-1 (`V > 5, A > 5`) ratings where `.dat` stored `9.0 - rating`, recovering all 1,280 trials × 120 steps = 153,600 control steps."
+        ],
+        tradeoffs: "Why keep raw `.dat` files strictly read-only? Rule 5 forbids altering raw data on disk; `DEAPLoader` patches the labels deterministically in memory at load time (`use_metadata_labels=True`).",
+        labGuide: "Test Mission 1 (inspect the corrupted `.dat` mode where 40 ratings equal 0.00) and Mission 2 (enable `use_metadata_labels=True` to restore all 439 Q1 trials)."
+      },
+      level3: {
+        math: "X_subj ∈ R^{40 × 40 × 8064} @ f_s = 128 Hz  |  If (V_xls > 5 ∧ A_xls > 5): y_dat = 9.0 - y_xls  (439 / 1,280 trials)",
+        variables: [
+          "32 Subjects × 40 Trials = 1,280 total trials (153,600 valid 0.5 s windows).",
+          "Samples 0:384 (3.0 s @ 128 Hz) : Neutral pre-stimulus fixation baseline.",
+          "Samples 384:8064 (60.0 s @ 128 Hz) : Music-video stimulus (120 steps of 64 samples).",
+          "439 Q1 Trials : Exact number of trials with V > 5 and A > 5 inverted as (9.0 - rating) in raw .dat['labels']."
+        ],
+        codeWalkthrough: "src/data/loader.py → `DEAPLoader.load_subject(subject_id, use_metadata_labels=True)` reads `participant_ratings.xls`, aligns by `Experiment_id`, verifies Dominance/Liking within 1e-6, and restores authoritative SAM ratings [1, 9]."
+      },
+      codeRef: "src/data/loader.py → DEAPLoader, docs/deap_sha256_manifest.json, Koelstra et al. (2012)",
       trivia: [
         {
-          q: "How long is the pre-stimulus baseline fixation epoch in every DEAP trial?",
-          options: ["1.0 s (128 samples)", "3.0 s (384 samples)", "10.0 s (1280 samples)"],
-          answer: 1,
-          explain: "Samples 0:384 (3.0 s at 128 Hz) are the neutral fixation baseline used for causal normalization."
+          q: "[Level 1 · Warm-Up] Why did raw DEAP `.dat['labels']` contain 40 exact `0.00` ratings even though the SAM scale runs from 1 to 9?",
+          options: [
+            "All 439 Quadrant-1 trials (Valence > 5 and Arousal > 5) were stored inverted as (9.0 - rating), turning 9.00 into 0.00.",
+            "Participants skipped 40 videos.",
+            "The SAM scale starts at 0.00 for neutral."
+          ],
+          answer: 0,
+          explain: "The formula (9.0 - rating) was accidentally applied to all 439 Quadrant-1 trials in `.dat['labels']`; restoring from `participant_ratings.xls` fixes all 439 trials."
         },
         {
-          q: "Why did raw DEAP .dat['labels'] have 40 exact 0.00 ratings?",
+          q: "[Level 2 + Lab] How is each 63.0-second DEAP trial (8,064 samples at 128 Hz) partitioned?",
           options: [
-            "Participants fell asleep during those trials.",
-            "All 439 Quadrant-1 trials were stored inverted as (9.0 - rating), so 9.00 became 0.00.",
-            "The EEG cap disconnected."
+            "3.0 s pre-stimulus baseline (samples 0:384) followed by 60.0 s stimulus (samples 384:8064, yielding 120 steps @ 0.5 s).",
+            "30.0 s baseline followed by 33.0 s stimulus.",
+            "63.0 s of continuous stimulus with no baseline."
+          ],
+          answer: 0,
+          explain: "3.0 s × 128 Hz = 384 baseline samples (`0:384`), and 60.0 s × 128 Hz = 7,680 stimulus samples (`384:8064`)."
+        },
+        {
+          q: "[Level 3 · Boss Check] How does `DEAPLoader` in `src/data/loader.py` verify that `participant_ratings.xls` rows match the exact trial order of the `.dat` pickle files?",
+          options: [
+            "It sorts trials alphabetically by song title.",
+            "It aligns by `Experiment_id` and asserts that uncorrupted Dominance & Liking columns match `.dat['labels']` within 1e-6.",
+            "It overwrites the raw `.dat` files on disk."
           ],
           answer: 1,
-          explain: "Cross-checking participant_ratings.xls (verified to 1e-6 against Dominance/Liking) restored all 439 Q1 trials!"
+          explain: "Matching `Experiment_id` and checking Dominance/Liking to < 1e-6 guarantees 100% alignment while keeping raw `.dat` files strictly read-only."
         }
       ]
     },
+
     {
       id: "montages",
-      title: "3. Wearable EEG Montages",
+      title: "3. Wearable EEG Montages & Geneva Indexing",
       phase: "Phase 1",
       tag: "DATA-ID",
       labType: "montage",
-      summary: "Comparing the 32-channel lab cap against practical 6-electrode and 4-electrode wearable subsets.",
-      plainEnglish: "Nobody wears a 32-electrode gel cap at their desk. We benchmark full_32 (146 features, 0.903 ms/step) against wearable_6 (Fz, F3, F4, P4, T7, T8 → 38 features, 0.842 ms/step) and wearable_4 (AF3, AF4, T7, T8 → 29 features, 0.822 ms/step). Crucially, DEAP uses the Geneva BioSemi sequence, which differs from MNE's default biosemi32 template at 30 of 32 positions—so we map channel indices explicitly!",
-      math: "D_full = 135 EEG + 11 Periph = 146  |  D_w6 = 27 + 11 = 38  |  D_w4 = 18 + 11 = 29",
-      codeRef: "src/data/loader.py (MONTAGE_CHANNELS), src/features/eeg_pipeline.py",
+      summary: "Benchmarking 32-ch lab caps (146 D) vs. 6-ch (38 D) and 4-ch (29 D) wearables without MNE channel scrambling.",
+      level1: {
+        analogy: "A 32-electrode hospital cap (`full_32`) is like setting up 32 studio microphones around an orchestra—great in a lab, impossible on a daily commute. Our `wearable_6` (6 electrodes) and `wearable_4` (4 forehead/ear electrodes) test whether a sleek headband can still track Valence and Arousal. Even more important: plugging DEAP into MNE's default `biosemi32` map is like reading a phonebook with the names shuffled—30 out of 32 wires point to the wrong brain region!",
+        naiveTrap: "Assuming all 32-channel BioSemi caps share the same channel order! DEAP recorded in Geneva (`Geneva 10–20 sequence`), which disagrees with MNE's default `biosemi32` at 30 of 32 indices.",
+        labGuide: "In the Lab on the right, switch between `full_32`, `wearable_6`, and `wearable_4`, tap `F4` on the head map, and toggle the Geneva vs. MNE Channel Scrambler warning."
+      },
+      level2: {
+        pipeline: [
+          "1. Select montage channel indices explicitly from `MONTAGE_CHANNELS` in `src/data/loader.py` (Geneva order).",
+          "2. Extract 4 EEG log-bandpowers per channel + montage-specific asymmetry/ratio features (`135`, `27`, or `18` EEG features).",
+          "3. Concatenate the `11` peripheral autonomic features (5 GSR + 6 BVP) to form `D = 146`, `38`, or `29` total features.",
+          "4. Verify real-time step latency stays < 1.55 ms (`0.903 ms` full_32, `0.842 ms` wearable_6, `0.822 ms` wearable_4)."
+        ],
+        tradeoffs: "`wearable_6` (`Fz, F3, F4, P4, T7, T8`) retains all 3 canonical cognitive/affective indices (`FAA`, `TBR`, `BAR`) while cutting EEG channels by 81% (from 32 to 6). `wearable_4` (`AF3, AF4, T7, T8`) drops midline/parietal sites (`Fz, P4`) to fit a minimalist forehead+temple band.",
+        labGuide: "Complete Mission 1 (select `wearable_4` to verify 29 features & 0.822 ms latency) and Mission 2 (tap electrode `F4` on the SVG head map to verify Geneva index 19)."
+      },
+      level3: {
+        math: "D_full = (32×4 + 7) + 11 = 146  |  D_w6 = (6×4 + 3) + 11 = 38  |  D_w4 = (4×4 + 2) + 11 = 29",
+        variables: [
+          "full_32 (indices 0..31) : 128 bandpowers + 7 bilateral alpha asymmetries + 11 peripheral = 146 features (0.903 ms mean).",
+          "wearable_6 [18:Fz, 2:F3, 19:F4, 28:P4, 7:T7, 25:T8] : 24 bandpowers + 3 indices (FAA, TBR, BAR) + 11 peripheral = 38 features (0.842 ms mean).",
+          "wearable_4 [1:AF3, 17:AF4, 7:T7, 25:T8] : 16 bandpowers + 2 asymmetries (AF4-AF3, T8-T7) + 11 peripheral = 29 features (0.822 ms mean).",
+          "Geneva vs. MNE biosemi32 : Disagrees at 30/32 slots; only Fp1 (0) and Oz (31 in MNE / 14 in Geneva—wait: Fp1=0 and Oz match only 2 slots total)."
+        ],
+        codeWalkthrough: "src/data/loader.py (`DEAP_EEG_CHANNELS_GENEVA`, `MONTAGE_CHANNELS`) and `src/features/eeg_pipeline.py` (`ASYMMETRY_PAIRS`). Unit-tested in `tests/test_montage_shapes.py`."
+      },
+      codeRef: "src/data/loader.py (MONTAGE_CHANNELS), src/features/eeg_pipeline.py, results/phase1_audit_metrics.json",
       trivia: [
         {
-          q: "Which electrodes are in our wearable_6 montage?",
+          q: "[Level 1 · Warm-Up] Why must we NEVER apply MNE's default `biosemi32` channel template directly to DEAP?",
           options: [
-            "Fz, F3, F4, P4, T7, T8",
-            "Fp1, Fp2, O1, O2, Cz, Pz",
-            "AF7, AF8, TP9, TP10, Oz, Cz"
+            "DEAP's Geneva BioSemi acquisition sequence differs from MNE's default `biosemi32` order at 30 of 32 electrode positions.",
+            "MNE only supports 64-channel caps.",
+            "DEAP was recorded at 1000 Hz."
           ],
           answer: 0,
-          explain: "wearable_6 uses Fz (TBR), F3 & F4 (FAA), P4 (BAR), and temporal T7 & T8."
+          explain: "30 out of 32 channels are in different slots! Using MNE's default template scrambles frontal, parietal, and occipital signals."
         },
         {
-          q: "Why must we NOT use MNE's default 'biosemi32' channel order on DEAP?",
+          q: "[Level 2 + Lab] Which 6 electrodes make up our `wearable_6` montage (38 total features, 0.842 ms mean latency)?",
           options: [
-            "MNE only supports 16 channels.",
-            "DEAP's Geneva acquisition sequence differs from MNE's default biosemi32 at 30 of 32 positions.",
-            "MNE uses 256 Hz."
+            "Fz (18), F3 (2), F4 (19), P4 (28), T7 (7), T8 (25)",
+            "AF3, AF4, Fp1, Fp2, O1, O2",
+            "Cz, Pz, Oz, Fp1, Fp2, Fz"
           ],
-          answer: 1,
-          explain: "Only Fp1 (index 0) and Oz (index 31) match! Using explicit Geneva indices prevents spatial scrambling."
+          answer: 0,
+          explain: "As shown on the head map, `wearable_6` picks Fz (TBR), F3 & F4 (FAA), P4 (BAR), and temporal T7 & T8."
+        },
+        {
+          q: "[Level 3 · Boss Check] How are the 29 total features in `wearable_4` (`AF3, AF4, T7, T8`) composed?",
+          options: [
+            "4 channels × 4 bands (16) + 2 alpha asymmetries (AF4-AF3, T8-T7) (2) + 11 peripheral (5 GSR + 6 BVP) = 29 features.",
+            "29 EEG channels × 1 band = 29 features.",
+            "4 channels × 7 bands + 1 BVP = 29 features."
+          ],
+          answer: 0,
+          explain: "16 log-bandpowers + 2 bilateral alpha asymmetries = 18 EEG features, plus 5 GSR + 6 BVP = 29 features."
         }
       ]
     },
+
     {
       id: "causal-filters",
-      title: "4. Causal DSP & Zero Lookahead",
+      title: "4. Causal DSP & Zero Lookahead Proof",
       phase: "Phase 1",
       tag: "Signal Processing",
       labType: "causality",
-      summary: "Why acausal filtfilt is an 'inverse crime' and how forward-only SOS filters + zi state give 0.0 lookahead.",
-      plainEnglish: "A digital filter removes unwanted frequencies. Offline tools like scipy.signal.filtfilt filter forward and then backward in time—which peeks into the future! In real-time control, you only have past and present samples. We use forward-only Butterworth Second-Order Sections (sosfilt) with persistent state zi initialized at steady state (sosfilt_zi * x[0]).",
-      math: "y_k, z_k = sosfilt(SOS, x_k, zi=z_{k-1})  |  Causal Leak = 0.0 vs. filtfilt Leak = 27.595335",
-      codeRef: "src/features/causal_dsp.py → CausalSOSFilter, impute_causal_nans",
+      summary: "Why acausal filtfilt leaks 27.60 log-power units backward in time and how CausalSOSFilter guarantees 0.0 leak.",
+      level1: {
+        analogy: "Imagine driving a car while looking through a time machine that shows you a pothole 2 seconds before you reach it. That's what `scipy.signal.filtfilt` does: it filters a recording forward, then flips the whole recording backward from the end of the trial to the beginning! In a real-time BCI, the future hasn't happened yet. Our `CausalSOSFilter` only looks at past and present samples, guaranteeing `0.0` future leakage.",
+        naiveTrap: "Using `filtfilt` in an offline simulation of a real-time controller is a textbook Inverse Crime: the controller reacts to brainwave bursts before they even occur!",
+        labGuide: "In the Lab on the right, inject a massive 20 Hz burst at Sample 1024 (`t = 8.0 s`) and switch between `Causal SOS` (`0.0` leak) and `Acausal filtfilt` (`27.60` backward leak)."
+      },
+      level2: {
+        pipeline: [
+          "1. Impute any transient NaN/Inf sensor glitches causally via sample-and-hold (`impute_causal_nans`, fallback 0.0 at t=0).",
+          "2. Design N-th order Butterworth filter in Second-Order Sections (`scipy.signal.butter(..., output='sos')`) to prevent high-order polynomial overflow.",
+          "3. Initialize filter state `zi = sosfilt_zi(sos) * x[0]` on the very first sample so the filter starts at steady state without a startup transient spike.",
+          "4. Propagate state step-by-step: `y_chunk, self._zi = sosfilt(self.sos, x_chunk, zi=self._zi)`."
+        ],
+        tradeoffs: "Causal filters introduce a physical phase/group delay (e.g., `24.42 ms` mean / `3.13 samples` for 4–45 Hz EEG broadband; `4,856.15 ms` for 0.05 Hz GSR SCL), whereas `filtfilt` has zero phase delay only because it cheats by reading the future.",
+        labGuide: "Complete Mission 1 (expose the 27.60 unit backward leak in `Acausal filtfilt`) and Mission 2 (select `Compare Both` to see causal group delay vs. acausal pre-ringing)."
+      },
+      level3: {
+        math: "y_k, z_k = sosfilt(SOS, x_k, zi=z_{k-1}),  z_0 = sosfilt_zi(SOS)·x_0  |  max_{t ≤ 1024} |ΔF_causal(t)| = 0.0 vs. ΔF_filtfilt = 27.595335",
+        variables: [
+          "SOS : Cascaded 2nd-order section matrix (prevents numerical instability of transfer-function b, a polynomials).",
+          "z_k (zi) : Persistent internal filter delay-line state carried seamlessly across 0.5 s chunks.",
+          "0.0 : Exact bitwise difference in features at t <= 1024 when a 10^5 uV, 20 Hz burst is injected at sample 1024.",
+          "27.595335 : Log-bandpower leakage before sample 1024 when using acausal scipy.signal.filtfilt."
+        ],
+        codeWalkthrough: "src/features/causal_dsp.py (`CausalSOSFilter`, `impute_causal_nans`) and `tests/test_causality_leak.py` (injects 10^5 uV 20 Hz burst at sample 1024 and asserts exact 0.0 difference on all prior windows)."
+      },
+      codeRef: "src/features/causal_dsp.py, tests/test_causality_leak.py, results/phase1_audit_metrics.json",
       trivia: [
         {
-          q: "What happens if you inject a 10^5 uV, 20 Hz burst at sample 1024 in our causal pipeline?",
+          q: "[Level 1 · Warm-Up] Why is `scipy.signal.filtfilt` forbidden in real-time closed-loop BCI pipelines?",
           options: [
-            "Features at t <= 1024 change by 0.0 (exact bitwise zero).",
-            "Features at t <= 1024 jump by 27.60 units.",
-            "The filter crashes with NaN."
+            "It filters forward and then backward from the end of the signal, leaking future samples into the past (27.595335 log-power units in our audit).",
+            "It only works on audio files.",
+            "It deletes half of the EEG channels."
           ],
           answer: 0,
-          explain: "Strict causality means future inputs at t >= 1024 can NEVER affect outputs at t <= 1024."
+          explain: "The backward pass of `filtfilt` propagates future events backward in time, violating real-time causality."
         },
         {
-          q: "Why do we initialize zi using sosfilt_zi(sos) * x[0]?",
+          q: "[Level 2 + Lab] Why does `CausalSOSFilter` initialize its internal state as `zi = sosfilt_zi(sos) * x[0]` on the first sample?",
           options: [
-            "To double the sampling rate.",
-            "To start the filter at steady state and prevent a huge startup transient spike.",
-            "To make the filter acausal."
+            "To start the filter at DC steady state matching the initial signal offset x[0], preventing an artificial startup transient spike.",
+            "To set the sampling rate to 128 Hz.",
+            "To zero out the entire signal."
           ],
-          answer: 1,
-          explain: "Steady-state initialization eliminates artificial ringing on the very first sample of a trial."
+          answer: 0,
+          explain: "Scaling `sosfilt_zi(sos)` by `x[0]` prevents a huge step-response ringing artifact at `t = 0`."
+        },
+        {
+          q: "[Level 3 · Boss Check] In `tests/test_causality_leak.py`, when a `10^5 uV` 20 Hz burst is injected at sample 1024 (`t = 8.0 s`), what is the maximum feature change for `t <= 1024` in our causal pipeline, and what is the measured mean group delay of the 4th-order 4–45 Hz EEG broadband filter?",
+          options: [
+            "0.0 exact lookahead leak; 24.42 ms (3.13 samples) mean group delay.",
+            "1.55 leak; 500 ms group delay.",
+            "27.60 leak; 0.0 ms group delay."
+          ],
+          answer: 0,
+          explain: "Verified in `results/phase1_audit_metrics.json`: causal leak is exactly `0.0`, and the 4–45 Hz 4th-order Butterworth SOS filter has `3.13 samples` (`24.42 ms`) mean passband group delay."
         }
       ]
     },
+
     {
       id: "eeg-features",
-      title: "5. EEG Spectral & Asymmetry Features",
+      title: "5. EEG Spectral Power, Baseline Norm & Asymmetry",
       phase: "Phase 1",
       tag: "Neuroscience",
       labType: "eeg-bands",
-      summary: "Sliding 2.0 s Hamming rFFT across Theta, Alpha, Beta, Gamma plus Frontal Alpha Asymmetry (FAA).",
-      plainEnglish: "Every 0.5 s, we take the last 2.0 s (256 samples) of causally filtered EEG (4–45 Hz), multiply by a Hamming window to reduce spectral leakage, and run an rFFT. We integrate power in 4 bands: Theta (4–8 Hz, effort), Alpha (8–12 Hz, relaxation/valence), Beta (12–30 Hz, active thought), Gamma (30–45 Hz, emotion). Then we take log-power minus the 3.0 s baseline log-power, and compute Frontal Alpha Asymmetry (F4 - F3).",
-      math: "ΔP̃[k,c,b] = ln(P[k,c,b] + ε) - ln(P_base[c,b] + ε),   ε = 1e-12",
-      codeRef: "src/features/eeg_pipeline.py → CausalEEGPipeline",
+      summary: "Sliding 2.0 s Hamming rFFT across Theta/Alpha/Beta/Gamma, log-baseline normalization (ε = 1e-12), and FAA/TBR/BAR.",
+      level1: {
+        analogy: "A prism splits white light into rainbow colors; our Fast Fourier Transform (`rFFT`) splits raw brainwaves into 4 musical rhythms every 0.5 seconds: Theta (4–8 Hz, sleepy/mental effort), Alpha (8–12 Hz, relaxed/idling), Beta (12–30 Hz, active focus/alertness), and Gamma (30–45 Hz, intense emotion). Because every person's skull thickness differs, we subtract their own 3-second quiet baseline first!",
+        naiveTrap: "Comparing raw EEG microvolts across people without subtracting each trial's 3.0 s fixation baseline—or taking `ln(0)` on a flatlined channel without a safety floor `ε = 1e-12`, which crashes with `-Inf`!",
+        labGuide: "In the Lab on the right, adjust Right Frontal (`F4`), Left Frontal (`F3`), Midline (`Fz`), and Parietal (`P4`) bandpowers to see live `FAA`, `TBR`, and `BAR` updates."
+      },
+      level2: {
+        pipeline: [
+          "1. Filter EEG causally in 4.0–45.0 Hz broadband (4th-order Butterworth SOS, 24.42 ms delay) to reject DC drift and 50 Hz mains hum.",
+          "2. Slice a 2.0 s sliding window (`256 samples` @ 128 Hz) every `0.5 s` (`64 samples`), subtract window mean, and apply a Hamming taper `w[n]`.",
+          "3. Compute one-sided PSD via `rFFT` (`Δf = 0.5 Hz` bin width) and integrate bandpower in Theta (4–8 Hz), Alpha (8–12 Hz), Beta (12–30 Hz), and Gamma (30–45 Hz).",
+          "4. Normalize against the 3.0 s fixation baseline (`0:384`): `ΔP̃ = ln(P + ε) - ln(P_base + ε)` with `ε = 1e-12`, then compute `FAA = F4 - F3`, `TBR = θ_Fz - β_Fz`, and `BAR = β_P4 - α_P4`."
+        ],
+        tradeoffs: "Why a 2.0 s (256-sample) window? At 4 Hz (bottom of Theta), 2.0 s captures 8 full wave cycles (`Δf = 0.5 Hz` resolution) while staying short enough to track emotion shifts.",
+        labGuide: "Complete Mission 1 (drive `FAA = F4 - F3 > +1.00` for strong Approach/Positive Valence) and Mission 2 (drive `FAA < -0.80` while raising `Fz` Theta to see High Mental Effort + Withdrawal)."
+      },
+      level3: {
+        math: "ΔP̃[k,c,b] = ln(P[k,c,b] + ε) - ln(P_base[c,b] + ε) (ε = 10^{-12})  |  FAA = ΔP̃_{F4,α} - ΔP̃_{F3,α}",
+        variables: [
+          "P[k,c,b] : Integrated PSD in band b ∈ {θ, α, β, γ} for channel c at 2.0 s window k.",
+          "P_base[c,b] : Mean bandpower during the 3.0 s pre-stimulus fixation epoch (samples 0:384).",
+          "ε = 1e-12 : Numerical stability floor preventing ln(0) = -Inf on flatline/zero inputs.",
+          "FAA, TBR, BAR : Log-power differences (equivalent to log-ratios): FAA = α(F4)-α(F3), TBR = θ(Fz)-β(Fz), BAR = β(P4)-α(P4)."
+        ],
+        codeWalkthrough: "src/features/eeg_pipeline.py → `CausalEEGPipeline.process_trial()` and `extract_window_features()`. Verified on flatline zeros in `tests/test_numerical_stability.py`."
+      },
+      codeRef: "src/features/eeg_pipeline.py, configs/eeg_features.yaml, tests/test_numerical_stability.py",
       trivia: [
         {
-          q: "In wearable_6, what are the 3 derived neurophysiological indices?",
+          q: "[Level 1 · Warm-Up] Why do we add `ε = 1e-12` inside `ln(P + ε) - ln(P_base + ε)` when computing log-bandpowers?",
           options: [
-            "FAA (F4 - F3), Theta/Beta Ratio (Fz), and Beta/Alpha Ratio (P4).",
-            "Heart Rate, SDNN, and RMSSD.",
-            "SCL mean, SCL slope, and SCR power."
+            "To guarantee numerical stability and prevent `ln(0) = -Inf` or `NaN` if a sensor flatlines to zero.",
+            "To shift the sampling rate from 128 Hz to 256 Hz.",
+            "To remove 50 Hz power-line noise."
           ],
           answer: 0,
-          explain: "F4-F3 tracks valence asymmetry, Fz TBR tracks mental effort, and P4 BAR tracks cognitive demand."
+          explain: "If `P = 0` on a disconnected/flatlined electrode, `ln(0)` produces `-Inf`; `ε = 1e-12` keeps all features strictly finite."
         },
         {
-          q: "Why do we add ε = 1e-12 inside ln(P + ε)?",
+          q: "[Level 2 + Lab] What are the 3 derived neurophysiological indices in `wearable_6` and which electrodes do they use?",
           options: [
-            "To boost Gamma power.",
-            "To prevent ln(0) = -Inf if a channel flatlines.",
-            "To convert Hz to ms."
+            "Frontal Alpha Asymmetry `FAA = α(F4) - α(F3)` (valence), Theta/Beta Ratio `TBR` at `Fz` (mental effort), and Beta/Alpha Ratio `BAR` at `P4` (cognitive demand).",
+            "Heart Rate, SDNN, and RMSSD at Cz.",
+            "SCL Mean, SCL Slope, and SCR Power at Fp1."
           ],
-          answer: 1,
-          explain: "Numerical safety! Tested explicitly in test_numerical_stability.py with flatline zero inputs."
+          answer: 0,
+          explain: "Because features are already in log-space (`ΔP̃`), subtracting log-powers (`F4 - F3`, `θ_Fz - β_Fz`, `β_P4 - α_P4`) computes the exact log-ratios."
+        },
+        {
+          q: "[Level 3 · Boss Check] What window length, taper, and frequency resolution (`Δf`) does `CausalEEGPipeline` use for each 0.5 s step at 128 Hz?",
+          options: [
+            "2.0 s window (256 samples), Hamming taper, Δf = 0.5 Hz bin spacing across 4–45 Hz.",
+            "30.0 s window (3,840 samples), Rectangular taper, Δf = 0.033 Hz.",
+            "0.5 s window (64 samples), Blackman taper, Δf = 2.0 Hz."
+          ],
+          answer: 0,
+          explain: "256 samples at 128 Hz = 2.0 s window, giving `Δf = 128 / 256 = 0.5 Hz` per rFFT bin with a Hamming window."
         }
       ]
     },
+
     {
       id: "gsr-features",
-      title: "6. Finger GSR (Parallel SCL & SCR)",
+      title: "6. Finger GSR: Parallel SCL/SCR vs. 4.86 s Lag",
       phase: "Phase 1",
       tag: "Autonomic",
       labType: "gsr-parallel",
-      summary: "Separating slow tonic sweat (SCL) from fast phasic spikes (SCR) without phase-mismatch distortion.",
-      plainEnglish: "Galvanic Skin Response (Channel 37 / Index 36) measures sympathetic arousal via sweat glands. It has two parts: slow background drift (SCL, < 0.05 Hz) and fast spikes (SCR, 0.05–1.5 Hz). A naive approach subtracts (raw - SCL), but our 0.05 Hz lowpass filter lags by 621.59 samples (4.86 s)! Subtracting a 4.86 s delayed signal from undelayed raw GSR creates fake ripples. So we run two parallel 2nd-order filters instead.",
-      math: "SCL: 0.05 Hz LP (τ = 4,856.15 ms)  ||  SCR: 0.05–1.5 Hz BP (τ = 331.98 ms)  → 5 features",
-      codeRef: "src/features/gsr_pipeline.py → CausalGSRPipeline",
+      summary: "Why subtracting a 4.86 s delayed 0.05 Hz lowpass corrupts SCR spikes, and how parallel filtering extracts 5 clean features.",
+      level1: {
+        analogy: "Your palm sweat (Galvanic Skin Response, Channel 37 / Index 36) has two stories: a slow tide called Tonic SCL (< 0.05 Hz background drift) and sudden waves called Phasic SCR (0.05–1.5 Hz startle/arousal spikes). If you try to get the fast waves by subtracting the slow tide from the raw signal (`raw - lowpass`), there's a catch: the ultra-slow 0.05 Hz lowpass filter lags behind by `4.86 seconds`! Subtracting a 5-second-old tide from today's wave creates a fake negative echo.",
+        naiveTrap: "Computing `SCR = raw_GSR - lowpass_0.05Hz(raw_GSR)` in a causal pipeline! Because the causal 0.05 Hz lowpass has a `621.59-sample` (`4,856.15 ms`) group delay, subtraction causes severe phase-mismatch distortion.",
+        labGuide: "In the Lab on the right, toggle between `Parallel SCR (Clean)` and `Naive Subtract (4.86 s Phase Mismatch)` to see the fake negative dip appear after every sweat spike."
+      },
+      level2: {
+        pipeline: [
+          "1. Read DEAP peripheral index 36 (1-based Channel 37: Finger GSR) into a 30.0 s (`3,840-sample`) causal FIFO buffer.",
+          "2. Branch A (Tonic SCL): Pass raw GSR through a 2nd-order 0.05 Hz causal Butterworth lowpass (`τ = 4,856.15 ms`) and baseline-normalize against the 3.0 s fixation mean/std.",
+          "3. Branch B (Phasic SCR): In parallel, pass raw GSR through a 2nd-order 0.05–1.5 Hz causal Butterworth bandpass (`τ = 331.98 ms`).",
+          "4. Extract 5 features every 0.5 s: `gsr_scl_mean`, `gsr_scl_slope` (OLS linear fit), `gsr_scr_power`, `gsr_scr_peaks` (causal 3-point local maxima with `1.0 s` refractory gate), and `gsr_scr_amp`."
+        ],
+        tradeoffs: "While parallel filtering eliminates phase-mismatch subtraction artifacts, raw `gsr_scr_power` has a heavy right-skewed tail across DEAP (reaching `8.73e8`), which we flag for log1p/robust scaling in Phase 2.",
+        labGuide: "Complete Mission 1 (switch to `Naive Subtract` to inspect the 4.86 s delayed dip) and Mission 2 (switch back to `Parallel SCR` and adjust the spike amplitude slider to inspect the 5 extracted GSR features)."
+      },
+      level3: {
+        math: "SCL_k = LP_{0.05Hz}(g_k) (τ = 4,856.15 ms)  ||  SCR_k = BP_{0.05-1.5Hz}(g_k) (τ = 331.98 ms)  → f_GSR ∈ R^5",
+        variables: [
+          "gsr_scl_mean, gsr_scl_slope : Baseline-normalized tonic level mean and ordinary-least-squares slope over the 30 s buffer.",
+          "gsr_scr_power : Mean squared phasic energy (1/N) Σ SCR[n]^2.",
+          "gsr_scr_peaks, gsr_scr_amp : Count and mean positive amplitude of causal 3-point peaks (SCR[n-1] > SCR[n-2] and SCR[n-1] >= SCR[n]) with a 1.0 s (128-sample) refractory period.",
+          "621.59 samples (4,856.15 ms) : Measured passband group delay of the 2nd-order 0.05 Hz SCL lowpass filter."
+        ],
+        codeWalkthrough: "src/features/gsr_pipeline.py → `CausalGSRPipeline` (`_scl_filter` + `_scr_filter` in parallel) and `configs/peripheral_features.yaml`."
+      },
+      codeRef: "src/features/gsr_pipeline.py, configs/peripheral_features.yaml, results/phase1_audit_metrics.json",
       trivia: [
         {
-          q: "Why do we avoid subtracting (raw_GSR - SCL_lowpass) to get phasic SCR?",
+          q: "[Level 1 · Warm-Up] Why does `CausalGSRPipeline` use two parallel filters instead of subtracting `raw_GSR - SCL_lowpass`?",
           options: [
-            "The 0.05 Hz lowpass has a ~4.86 s group delay, causing phase-mismatch gain peaking.",
-            "DEAP does not record GSR.",
-            "SCR only exists above 30 Hz."
+            "Because the causal 0.05 Hz SCL lowpass filter has a 4,856.15 ms (~4.86 s) group delay, so subtracting it from undelayed raw GSR creates severe phase-mismatch distortion.",
+            "Because subtraction is slower than FFT.",
+            "Because GSR is sampled at 1000 Hz."
           ],
           answer: 0,
-          explain: "Parallel filtering (LP for SCL, BP for SCR) completely avoids phase-mismatch artifacts!"
+          explain: "Subtracting a 4.86 s delayed signal from an undelayed signal creates a fake inverted echo; parallel LP (0.05 Hz) and BP (0.05–1.5 Hz) filters avoid this."
+        },
+        {
+          q: "[Level 2 + Lab] What are the 5 GSR features extracted every 0.5 s over the 30.0 s causal buffer?",
+          options: [
+            "`gsr_scl_mean`, `gsr_scl_slope`, `gsr_scr_power`, `gsr_scr_peaks` (1.0 s refractory gate), and `gsr_scr_amp`.",
+            "Theta, Alpha, Beta, Gamma, and FAA.",
+            "HR, SDNN, RMSSD, LF, and HF."
+          ],
+          answer: 0,
+          explain: "2 tonic SCL features (`mean`, `slope`) + 3 phasic SCR features (`power`, `peaks`, `amp`) = 5 GSR features."
+        },
+        {
+          q: "[Level 3 · Boss Check] What Phase 1 audit finding about `gsr_scr_power` is documented in `docs/PHASE_1_AUDIT_REPORT.md` for Phase 2 state-space modeling?",
+          options: [
+            "Unscaled `gsr_scr_power` reaches `8.73e8` on movement/artifact trials (vs. ~10^0 for EEG), requiring train-split `log1p`/robust scaling before fitting (C, R).",
+            "`gsr_scr_power` is always 0.0 across all 32 subjects.",
+            "`gsr_scr_power` contains 500 NaN values."
+          ],
+          answer: 0,
+          explain: "All 153,600 windows are strictly finite (0 NaN/Inf), but the 8-order-of-magnitude scale gap (`8.73e8` vs `10^0`) requires train-split normalization in Phase 2."
         }
       ]
     },
+
     {
       id: "bvp-features",
-      title: "7. Thumb BVP, HRV & Cold Start",
+      title: "7. Thumb BVP, Lomb–Scargle HRV & ω_BVP Fallback",
       phase: "Phase 1",
       tag: "Autonomic",
-      labType: "timeline",
-      summary: "Systolic peak detection, 200 bpm refractory cap, Lomb–Scargle LF/HF, and ω_BVP = 0.1 fallback.",
-      plainEnglish: "Thumb Blood Volume Pulse (Channel 39 / Index 38) tracks your heartbeat. After a 0.5–5.0 Hz bandpass (111.78 ms delay), a 1-sample-delayed peak detector finds heartbeats with a 300 ms refractory gate (so noise can't trigger > 200 bpm). Because heartbeats are unevenly spaced, we use Lomb–Scargle periodograms for LF (0.04–0.15 Hz) and HF (0.15–0.40 Hz) once >= 10 beats and >= 30 s have elapsed. If < 2 beats occur (4,070 of 153,600 windows = 2.65%), we fall back cleanly and emit ω_BVP = 0.1.",
-      math: "6 features: HR, SDNN, RMSSD, LF, HF, LF/HF  |  ω_BVP ∈ {0.1, 1.0}",
-      codeRef: "src/features/bvp_pipeline.py → CausalBVPPipeline",
+      labType: "bvp-hrv",
+      summary: "300 ms refractory peak detection, irregular-beat Lomb–Scargle LF/HF, and ω_BVP = 0.1 cold-start confidence.",
+      level1: {
+        analogy: "Your pulse wave (Thumb BVP, Channel 39 / Index 38) speeds up and slows down with every breath—that beat-to-beat wiggle is Heart Rate Variability (HRV), a goldmine for stress vs. calm. But two things make HRV tricky in real time: (1) heartbeats arrive at uneven times, so a regular FFT can't read them directly; and (2) during the first 1–2 seconds of a trial, only 1 heartbeat has arrived—you can't measure the gap between beats with just 1 beat! So we use the Lomb–Scargle periodogram for uneven beats, and emit a confidence tag `ω_BVP = 0.1` during cold start.",
+        naiveTrap: "Dividing by `(N_beats - 1)` when `N_beats < 2` (which crashes with `0/0 = NaN`!) or running a uniform-grid FFT on unevenly spaced heartbeat intervals.",
+        labGuide: "In the Lab on the right, scrub the Beat Count / Window Elapsed slider from Cold Start (`1 beat`, `ω_BVP = 0.1`) to Active HRV (`>= 10 beats & >= 30 s`, `ω_BVP = 1.0`) and test the 300 ms refractory gate."
+      },
+      level2: {
+        pipeline: [
+          "1. Filter Thumb BVP (index 38) with a 2nd-order 0.5–5.0 Hz causal Butterworth bandpass (`τ = 111.78 ms`, corresponding to 30–300 bpm).",
+          "2. Detect systolic peaks causally (`b[n-1] > b[n-2]` and `b[n-1] >= b[n]`, `b[n-1] > 0`) with a `300 ms` (`38-sample`) refractory gate capping heart rate at `<= 200 bpm`.",
+          "3. If `< 2` peaks exist (`< 1` RR interval, occurring in `4,070 / 153,600` windows = `2.65%`), fall back to baseline HR (`60 bpm` default) and set confidence `ω_BVP = 0.1`.",
+          "4. Once `>= 30.0 s` (`3,840 samples`) and `>= 10` RR intervals are available, evaluate `scipy.signal.lombscargle` on mean-centered RR intervals across LF (`0.04–0.15 Hz`) and HF (`0.15–0.40 Hz`) and set `ω_BVP = 1.0`."
+        ],
+        tradeoffs: "Why gate Lomb–Scargle until `>= 30 s` and `>= 10 beats`? A `0.04 Hz` LF wave has a `25.0 s` period—estimating it on a 5 s window produces meaningless spectral noise.",
+        labGuide: "Complete Mission 1 (trigger Cold-Start Fallback with `< 2` beats to see `ω_BVP = 0.1`) and Mission 2 (advance to `>= 30 s` and `>= 12` beats to activate Lomb–Scargle LF/HF with `ω_BVP = 1.0`)."
+      },
+      level3: {
+        math: "RR_i = t_{peak,i} - t_{peak,i-1} (≥ 300 ms)  |  P_LS(ω) = lombscargle(t_RR, RR - μ_RR)  |  ω_BVP ∈ {0.1 (4,070 win), 1.0 (149,530 win)}",
+        variables: [
+          "6 BVP Features : `bvp_hr_mean`, `bvp_sdnn`, `bvp_rmssd`, `bvp_lf_power` (0.04–0.15 Hz), `bvp_hf_power` (0.15–0.40 Hz), `bvp_lf_hf_ratio`.",
+          "300 ms (38 samples @ 128 Hz) : Refractory period preventing double-counting dicrotic notches (> 200 bpm).",
+          "ω_BVP = 0.1 : Degraded/cold-start confidence emitted on exactly 4,070 of 153,600 windows (2.65%) so the Kalman filter inflates R_BVP.",
+          "111.78 ms (14.31 samples) : Measured mean group delay of the 0.5–5.0 Hz BVP bandpass filter."
+        ],
+        codeWalkthrough: "src/features/bvp_pipeline.py → `CausalBVPPipeline` (`_extract_window_features`, `lombscargle`) and `tests/test_bvp_cold_start.py`."
+      },
+      codeRef: "src/features/bvp_pipeline.py, configs/peripheral_features.yaml, tests/test_bvp_cold_start.py",
       trivia: [
         {
-          q: "Why does BVP use Lomb–Scargle instead of standard FFT for LF/HF HRV?",
+          q: "[Level 1 · Warm-Up] Why does `CausalBVPPipeline` use the Lomb–Scargle periodogram instead of a standard FFT to compute LF (0.04–0.15 Hz) and HF (0.15–0.40 Hz) HRV?",
           options: [
-            "Heartbeat intervals (RR intervals) are unevenly spaced in time, which Lomb–Scargle handles natively.",
-            "Lomb–Scargle is a type of EEG electrode.",
-            "Standard FFT only works on 1-second windows."
+            "Because heartbeat RR intervals occur at unevenly spaced timestamps, which Lomb–Scargle evaluates natively without artificial resampling.",
+            "Because Lomb–Scargle does not need heartbeats.",
+            "Because FFT only works above 100 Hz."
           ],
           answer: 0,
-          explain: "Lomb–Scargle computes spectral power directly on irregular beat timestamps without interpolation distortion."
+          explain: "Heartbeats are point events separated by variable RR durations; `scipy.signal.lombscargle` estimates spectral power directly on irregular timestamps."
+        },
+        {
+          q: "[Level 2 + Lab] What happens during the first moments of a trial when fewer than 2 systolic peaks (`< 1` RR interval) have been detected?",
+          options: [
+            "The pipeline emits finite baseline fallback values and sets the quality confidence scalar to `ω_BVP = 0.1` (occurring in 4,070 of 153,600 windows = 2.65%).",
+            "The pipeline throws a DivideByZero exception and aborts the trial.",
+            "The pipeline sets Heart Rate to `NaN`."
+          ],
+          answer: 0,
+          explain: "Tested in `tests/test_bvp_cold_start.py`: all 6 BVP features remain finite and `ω_BVP = 0.1` signals low BVP confidence to the Phase 2 Kalman observer."
+        },
+        {
+          q: "[Level 3 · Boss Check] What are the two gating conditions required before Lomb–Scargle LF/HF spectral features activate, and what is the refractory period of the systolic peak detector?",
+          options: [
+            "`>= 30.0 s` buffer duration AND `>= 10` RR intervals; `300 ms` (`38 samples` @ 128 Hz, max 200 bpm) refractory period.",
+            "`>= 2.0 s` buffer AND `>= 2` beats; `10 ms` refractory period.",
+            "`>= 60.0 s` buffer AND `>= 100` beats; `1000 ms` refractory period."
+          ],
+          answer: 0,
+          explain: "Configured in `configs/peripheral_features.yaml`: `min_rr_intervals_for_freq: 10`, `window_length_sec: 30.0`, and `min_peak_distance_sec: 0.30`."
         }
       ]
     },
+
     {
       id: "kalman-p2",
-      title: "8. Phase 2: State-Space & Kalman Filter",
+      title: "8. Phase 2: 2D State-Space & Kalman Observer",
       phase: "Phase 2 (Next)",
       tag: "Control Theory",
       labType: "kalman-preview",
-      summary: "Identifying 32 Virtual Subjects (A, B, C, Q, R), scaling features, and fusing fast EEG with slow EDA/HRV.",
-      plainEnglish: "In Phase 2, we build a 2D mathematical 'digital twin' for each DEAP participant: x_{k+1} = A x_k + B u_k + w_k. A Kalman Filter acts like an optimal sensor fusion engine: it balances trust between its own prediction (process noise Q) and incoming sensors (measurement noise R). When EEG drops out or BVP degrades (ω_BVP = 0.1), the Kalman Filter automatically leans more on its model and remaining sensors!",
-      math: "x_{k+1} = A x_k + B u_k + w_k (w_k ~ N(0, Q)),   y_k = C x_k + v_k (v_k ~ N(0, R))",
-      codeRef: "Planned: src/models/ (Phase 2) — governed by control-theory-anti-inverse-crime",
+      summary: "Identifying 32 Virtual Subjects (A, B, C, Q, R), scaling features, augmenting filter lags, and fusing sensors under dropout.",
+      level1: {
+        analogy: "Imagine tracking a submarine with two sonar systems: one is fast but static-filled (EEG), and the other is steady but delayed by 5 seconds (GSR/BVP). A **Kalman Filter** is the ultimate navigator: it keeps a 2D mental model of how emotion moves (`x_{k+1} = A x_k + B u_k`) and blends that prediction with incoming sensors based on how trustworthy each sensor is right now (`Q` vs. `R`). If an EEG wire pops loose or BVP is in cold start (`ω_BVP = 0.1`), the Kalman filter smoothly rides on its internal model and remaining sensors!",
+        naiveTrap: "Feeding unscaled features (where `gsr_scr_power` is `8.73e8` and EEG is `~1.0`) directly into linear regression or a Kalman filter without scaling, delay augmentation, and collinearity pruning!",
+        labGuide: "In the Lab on the right, toggle `Simulate EEG Dropout` and adjust `Model Trust (1/Q)` and `ω_BVP Confidence` to watch the green Kalman estimate track the blue ground truth through sensor blackouts."
+      },
+      level2: {
+        pipeline: [
+          "1. Pre-condition Phase 1 features on training splits only: apply `log1p`/robust z-score scaling (fixing the `8.73e8` GSR scale gap) and prune exact linear dependencies (`FAA = F4-F3`, `TBR`, `BAR`, `LF/HF`).",
+          "2. Augment the state vector to account for the `4.86 s` (`~10 steps`) causal GSR SCL group delay and gate low-amplitude BVP windows (`HR < 40 bpm` or `ω_BVP = 0.1`) by inflating `R_k`.",
+          "3. Identify subject-specific matrices `(A_i, B_i, C_i, Q_i, R_i)` for all `N = 32` Virtual Subjects with sequential Affective Priming Score (`APS`, Gutierrez Maestro et al. 2025) transition weighting.",
+          "4. Verify asymptotic stability (`ρ(A_i) < 1`) and observability (`rank(obsv(A_i, C_i)) == 2`) on held-out test trials."
+        ],
+        tradeoffs: "Regularized subspace/state-space identification prevents overfitting on `D = 146` (`full_32`) features when fitting 40 trials per subject.",
+        labGuide: "Complete Mission 1 (enable `EEG Dropout` to see raw sensor error spike while the Kalman estimate stays bounded) and Mission 2 (raise `Model Trust 1/Q >= 8` during dropout to reduce estimation RMSE)."
+      },
+      level3: {
+        math: "x_{k+1} = A x_k + B u_k + w_k (w_k ~ N(0,Q)),  y_k = C x_k + v_k (v_k ~ N(0,R_k))  |  K_k = P_{k|k-1} C^T (C P_{k|k-1} C^T + R_k)^{-1}",
+        variables: [
+          "A ∈ R^{2×2}, B ∈ R^{2×m}, C ∈ R^{D×2} : State transition, actuator input, and physiological observation matrices.",
+          "Q, R_k : Process noise covariance and time-varying measurement noise covariance (inflated when ω_BVP = 0.1 or EEG drops out).",
+          "K_k : Optimal Kalman gain balancing model prediction P_{k|k-1} against sensor innovation (y_k - C x̂_{k|k-1}).",
+          "APS : Affective Priming Score (Gutierrez Maestro et al., 2025) modeling emotional carry-over between consecutive trials."
+        ],
+        codeWalkthrough: "Planned for `src/models/` in Phase 2, strictly following `docs/PHASE_1_AUDIT_REPORT.md` (§5 Recommendations 1–4) and `.agents/skills/control-theory-anti-inverse-crime/SKILL.md`."
+      },
+      codeRef: "docs/PHASE_1_AUDIT_REPORT.md (§5), .agents/skills/control-theory-anti-inverse-crime/SKILL.md, Gutierrez Maestro et al. (2025)",
       trivia: [
         {
-          q: "What two Phase 1 findings must Phase 2 handle before fitting (A, B, C, Q, R)?",
+          q: "[Level 1 · Warm-Up] How does our Kalman Filter handle a temporary EEG channel dropout or a BVP cold-start window (`ω_BVP = 0.1`)?",
           options: [
-            "Feature scaling (gsr_scr_power reaches 8.73e8 vs ~10^0 EEG) and filter group-delay augmentation.",
-            "Deleting all 32 subjects and generating random noise.",
-            "Switching from 128 Hz to 10 Hz."
+            "It increases the measurement noise covariance `R_k` for the degraded channels so the Kalman gain `K_k` relies more on the state-space prediction `A x̂_k + B u_k` and intact sensors.",
+            "It halts the closed-loop controller until the experiment restarts.",
+            "It replaces missing EEG with random numbers between -100 and +100."
           ],
           answer: 0,
-          explain: "Train-split scaling/log-transforms + delay state augmentation + linear-dependency pruning are documented in PHASE_1_AUDIT_REPORT.md!"
+          explain: "By inflating `R_k` on degraded/missing channels, `K_k = P C^T (C P C^T + R_k)^{-1}` automatically down-weights unreliable measurements."
+        },
+        {
+          q: "[Level 2 + Lab] What three Phase 1 audit findings in `docs/PHASE_1_AUDIT_REPORT.md` must Phase 2 address before fitting `(A, B, C, Q, R)`?",
+          options: [
+            "(1) Train-split scaling for `gsr_scr_power` (`8.73e8`), (2) pruning exact linear combinations (`FAA = F4-F3`, `TBR`, `BAR`), and (3) delay augmentation for the `4.86 s` GSR SCL lag.",
+            "Deleting GSR, deleting BVP, and downsampling EEG to 1 Hz.",
+            "Using `filtfilt` on all trials."
+          ],
+          answer: 0,
+          explain: "All three are explicitly logged in `docs/PHASE_1_AUDIT_REPORT.md` §5 to prevent ill-conditioned covariance matrices `R`."
+        },
+        {
+          q: "[Level 3 · Boss Check] Which literature concept from Gutierrez Maestro et al. (2025) inspires our sequential inter-trial emotional carry-over modeling in Phase 2?",
+          options: [
+            "The Affective Priming Score (APS), which quantifies how emotional state from trial `n-1` carries over into baseline/trial `n`.",
+            "The Lomb–Scargle periodogram.",
+            "The Geneva BioSemi montage."
+          ],
+          answer: 0,
+          explain: "Gutierrez Maestro et al. (2025) introduced the Affective Priming Score (APS) to capture sequential emotional carry-over across stimuli."
         }
       ]
     },
+
     {
       id: "three-actuators",
-      title: "9. Phase 3: Three-Actuator Coordination",
+      title: "9. Phase 3: Three-Actuator Decoupling Model",
       phase: "Phase 3 (Planned)",
       tag: "LIT-PARAM",
-      labType: "circumplex",
-      summary: "Combining Parametric Music, Ambient Lighting, and Wrist Heartbeat Haptics to break tempo–valence crossover.",
-      plainEnglish: "Music alone has strong arousal control (R² = 0.86–0.96, Agres et al. 2023/2025) but drags valence down when slowed for calming. So we coordinate three literature-grounded actuators: (1) Parametric Music, (2) Ambient Lighting (Li et al. 2025: 180 lx green boosts valence, 20 lx purple boosts FMT & FAA), and (3) Wrist Heartbeat Haptics (Azevedo et al. 2017: 40–65 bpm pulses ~20% slower than resting HR reduce SCR & anxiety).",
-      math: "u_k = [u_music_tempo, u_music_val, u_light_lux, u_light_hue, u_haptic_bpm]^T",
-      codeRef: "Planned: src/models/actuators.py (Phase 3) — tagged [LIT-PARAM]",
+      labType: "three-actuators-lab",
+      summary: "Coordinating Parametric Music (Agres 2023/2025), Ambient Light (Li 2025), and Wrist Haptics (Azevedo 2017) to break crossover.",
+      level1: {
+        analogy: "Try steering a sailboat with only a rudder and no sail: turning left also slows you down! Music has that exact flaw in Quadrant 4 (`Calm`: High Valence, Low Arousal). Agres et al. (2023, 2025) proved that slowing music tempo to calm someone down (`R² = 0.86–0.96` for arousal) accidentally makes the music sound *sad*, dragging Valence down (**Tempo–Valence Crossover**). We fix this by adding two independent actuators: **Green/Purple Ambient Lighting** (Li et al., 2025) to lift Valence and **Slow Wrist Heartbeat Haptics** (Azevedo et al., 2017) to lower Arousal without sad audio!",
+        naiveTrap: "Assuming a single actuator (Music alone) can independently steer both axes of a 2D Valence–Arousal space without cross-coupling!",
+        labGuide: "In the Lab on the right, set a Quadrant-4 Calm goal (`V* = +0.75, A* = -0.60`), observe the Valence drop when only Music is active, then mix in `180 lx Green Light` and `52 bpm Haptics` to decouple both axes."
+      },
+      level2: {
+        pipeline: [
+          "1. Actuator 1 — Parametric Music (Agres et al. 2023/2025; Ehrlich et al. 2019; Daly et al. 2016): Modulate tempo/density for Arousal (`R² = 0.86–0.96`) and mode/harmonic brightness for Valence, modeling the Q4 tempo–valence crossover penalty.",
+          "2. Actuator 2 — Ambient Lighting (Li et al. 2025): Switch between `180 lx Green` (highest self-reported valence) and `20 lx Purple` (elevated frontal midline theta FMT & alpha asymmetry FAA).",
+          "3. Actuator 3 — Wrist Heartbeat Haptics (Azevedo et al. 2017): Deliver tactile pulses `~20% slower` than resting HR, clamped to `40–65 bpm`, reducing tonic/phasic SCR arousal (`p = 0.029`) and STAI anxiety (`p = 0.007`) without altering mean HR.",
+          "4. Tag all actuator gain matrices `B_act` as `[LIT-PARAM]` with physical saturation (`u_min <= u_k <= u_max`) and slew-rate (`|Δu_k| <= Δu_max`) limits."
+        ],
+        tradeoffs: "Music acts fast on cortical/auditory engagement, while slow haptics and ambient lighting provide steady, non-intrusive autonomic and valence bias without acoustic fatigue.",
+        labGuide: "Complete Mission 1 (run Music Alone in Q4 Calm to observe the Tempo–Valence Crossover error `> 0.35`) and Mission 2 (tune Light to `180 lx Green` and Haptics to `52 bpm` so 2D tracking error drops `< 0.08`)."
+      },
+      level3: {
+        math: "u_k = [u_tempo, u_mode, u_light_lx, u_haptic_bpm]^T  |  B_act u_k = B_music u_m + B_light u_l + B_haptic u_h  (rank(B_act) = 2)",
+        variables: [
+          "R² = 0.86–0.96 : Linear arousal regression fit of musical tempo/features in Agres et al. (2023/2025), accompanied by tempo–valence crossover in Q4.",
+          "180 lx Green vs. 20 lx Purple (Li et al., 2025) : 180 lx green maximizes subjective valence; 20 lx purple maximizes EEG FMT and FAA.",
+          "40–65 bpm (~20% below resting HR, Azevedo et al., 2017) : Calming haptic pulse band that lowers NS-SCRs (p=0.029) and STAI anxiety (p=0.007).",
+          "[LIT-PARAM] : Explicit provenance tag distinguishing literature-derived actuator gains from DEAP data-identified dynamics [DATA-ID]."
+        ],
+        codeWalkthrough: "Documented in `docs/CLAIMS_EVIDENCE_MATRIX.md` and `.agents/skills/control-theory-anti-inverse-crime/SKILL.md` for Phase 3 (`src/models/actuators.py`)."
+      },
+      codeRef: "docs/CLAIMS_EVIDENCE_MATRIX.md, Agres et al. (2023/2025), Li et al. (2025), Azevedo et al. (2017)",
       trivia: [
         {
-          q: "In Azevedo et al. (2017), what wrist haptic rate reduced anxiety and skin conductance arousal?",
+          q: "[Level 1 · Warm-Up] What is the 'Tempo–Valence Crossover' reported by Agres et al. (2023, 2025) when using Music Alone?",
           options: [
-            "120–140 bpm",
-            "~20% slower than resting HR, clamped to 40–65 bpm",
-            "10 bpm"
+            "Slowing music tempo to reduce Arousal (e.g., toward Quadrant 4 Calm) unintentionally makes the music sound sadder, pulling Valence downward.",
+            "Playing fast music lowers heart rate.",
+            "Music only affects skin conductance and never affects EEG."
           ],
-          answer: 1,
-          explain: "40–65 bpm tactile pulses lowered NS-SCRs (p=0.029) and STAI anxiety (p=0.007) without changing mean HR."
+          answer: 0,
+          explain: "While music controls Arousal strongly (`R² = 0.86–0.96`), slow calming music couples negatively into Valence—requiring auxiliary Lighting + Haptics."
+        },
+        {
+          q: "[Level 2 + Lab] What are the exact literature-verified parameters for Ambient Lighting (Li et al., 2025) and Wrist Heartbeat Haptics (Azevedo et al., 2017)?",
+          options: [
+            "Lighting: `180 lx Green` (highest subjective valence) & `20 lx Purple` (boosts FMT/FAA); Haptics: `~20% slower than resting HR`, clamped to `40–65 bpm` (lowers SCRs `p=0.029` & anxiety `p=0.007`).",
+            "Lighting: 10,000 lx White; Haptics: 180 bpm.",
+            "Lighting: 0 lx Pitch Dark; Haptics: 5 bpm."
+          ],
+          answer: 0,
+          explain: "Verified directly against Li et al. (2025) and Azevedo et al. (2017) in `docs/CLAIMS_EVIDENCE_MATRIX.md`."
+        },
+        {
+          q: "[Level 3 · Boss Check] Why does adding Lighting and Wrist Haptics to Parametric Music mathematically resolve the Quadrant-4 Calm tracking problem?",
+          options: [
+            "It makes the 2D control input matrix `B_act` full-rank (`rank = 2`) with independent control authority over Valence and Arousal within saturation bounds `u_min <= u_k <= u_max`.",
+            "It increases the EEG sampling rate from 128 Hz to 512 Hz.",
+            "It eliminates the need for a state estimator."
+          ],
+          answer: 0,
+          explain: "With `rank(B_act) = 2` and positive valence bias from 180 lx green light + arousal damping from 40–65 bpm haptics, the controller decouples V and A."
         }
       ]
     },
+
     {
       id: "anti-inverse-crime",
-      title: "10. Phase 4: MPC, RL & Anti-Inverse Crime",
+      title: "10. Phase 4–5: MPC, RL & Anti-Inverse-Crime Benchmark",
       phase: "Phase 4–5 (Planned)",
       tag: "Verification",
-      labType: "kalman-preview",
-      summary: "Fair benchmarking of Open-Loop, LQR, MPC, Fuzzy-MPC, and Model-Free RL under noise, mismatch & dropouts.",
-      plainEnglish: "An 'inverse crime' happens when you test a controller on the exact same noiseless equation you used to design it—of course it looks perfect! To be honest and journal-ready for Elsevier BSPC, Phase 4 tests all 5 controllers under: (a) process/sensor noise, (b) plant–model parameter mismatch, (c) emotional carry-over disturbances, and (d) temporary EEG channel dropouts—all with matched actuator bounds and fixed random seeds across all 32 Virtual Subjects.",
-      math: "u_min <= u_k <= u_max  |  Report: mean ± SD, median [IQR], non-responder < 38%",
-      codeRef: "AGENTS.md Rule 3 & .agents/skills/control-theory-anti-inverse-crime/SKILL.md",
+      labType: "mpc-benchmark-lab",
+      summary: "Benchmarking Open-Loop, LQR, Constrained MPC, Fuzzy-MPC, and RL under plant mismatch, dropouts, and 38% non-responder baselines.",
+      level1: {
+        analogy: "If a teacher writes a practice test and then gives the exact same questions with the exact same numbers on the final exam, getting 100% doesn't prove you learned anything! In control theory, testing a controller on the exact noiseless equations used to design it is called an **Inverse Crime**. To prove our controller works in the real world, we stress-test 5 controllers (`Open-Loop`, `LQR`, `Constrained MPC`, `Fuzzy-MPC`, and `Model-Free RL`) when the virtual human's brain dynamics drift (`ΔA, ΔB`), carryover emotions linger, and sensors drop out!",
+        naiveTrap: "Testing LQR or MPC on a noiseless nominal model without actuator saturation limits (`u_min <= u_k <= u_max`), or cherry-picking 1 lucky subject instead of reporting all 32 subjects (`mean ± SD`, `median [IQR]`, and non-responder rate vs. Sayal et al. 2025's `38%` mean).",
+        labGuide: "In the Lab on the right, switch between the 5 Controllers (`Open-Loop`, `LQR`, `Constrained MPC`, `Fuzzy-MPC`, `RL`) and inject `Plant–Model Mismatch (ΔA)` to see which controller respects actuator safety bounds while minimizing RMSE."
+      },
+      level2: {
+        pipeline: [
+          "1. Compare 5 matched-bound controllers across all `N = 32` Virtual Subjects and 4 Daly et al. (2016) trajectories (`De-stress`, `Calm`, `Make Happy`, `Excite`).",
+          "2. Enforce identical physical saturation (`u_min <= u_k <= u_max`) and slew-rate (`|Δu_k| <= Δu_max`) constraints across all controllers.",
+          "3. Stress-test under 3 Anti-Inverse-Crime regimes: (a) Plant–Model Mismatch (`ΔA, ΔB` perturbation), (b) Affective Priming Carry-Over disturbance, and (c) Temporary EEG Channel Dropout.",
+          "4. Report fixed-seed Monte Carlo cohort distributions (`mean ± SD`, `median [IQR]`), tracking RMSE, settling time, actuator effort, and cohort non-responder fraction against the `16–57%` (`mean 38%`, Sayal et al. 2025) neurofeedback benchmark."
+        ],
+        tradeoffs: "`LQR` is fast in closed form but clips naively at saturation bounds; `Constrained MPC` optimizes over a lookahead horizon while explicitly respecting `u_min <= u_k <= u_max`; `Fuzzy-MPC` adapts weights smoothly under uncertainty; `Model-Free RL` requires exploration/training data before converging.",
+        labGuide: "Complete Mission 1 (compare `Constrained MPC` vs. `Open-Loop` under `25% Plant Mismatch`) and Mission 2 (test `Fuzzy-MPC` at `>= 30% Mismatch` to verify zero actuator saturation violations)."
+      },
+      level3: {
+        math: "min_{u_{0..H-1}} Σ_{j=0}^{H-1} (||x̂_{k+j} - x*||_Q^2 + ||u_{k+j}||_R^2 + ||Δu_{k+j}||_S^2)   s.t.  u_min ≤ u ≤ u_max, |Δu| ≤ Δu_max",
+        variables: [
+          "H : MPC prediction horizon (steps of Δt = 0.5 s).",
+          "Q, R, S : State tracking error weight, control effort penalty, and actuator slew-rate smoothness penalty.",
+          "ΔA, ΔB : True-plant parameter perturbations testing robustness against inter-trial/inter-subject mismatch (Anti-Inverse Crime).",
+          "16–57% (mean 38%, Sayal et al., 2025) : Literature BCI/neurofeedback non-responder rate benchmark."
+        ],
+        codeWalkthrough: "Governed by `AGENTS.md` (Rules 3, 4, 6) and `.agents/skills/control-theory-anti-inverse-crime/SKILL.md` for Phase 4–5 implementation in `src/controllers/`."
+      },
+      codeRef: "AGENTS.md (Rule 3), .agents/skills/control-theory-anti-inverse-crime/SKILL.md, Sayal et al. (2025)",
       trivia: [
         {
-          q: "What is the neurofeedback non-responder benchmark rate cited from Sayal et al. (2025)?",
-          options: ["5%", "16–57% (mean 38%)", "90%"],
-          answer: 1,
-          explain: "Sayal et al. (2025) cite 16–57% (mean 38%) non-responders; we evaluate our cohort non-responder fraction transparently against this!"
+          q: "[Level 1 · Warm-Up] What is an 'Inverse Crime' in closed-loop physiological simulation (AGENTS.md Rule 3)?",
+          options: [
+            "Testing a controller or Kalman observer on the exact same noiseless, unperturbed model parameters `(A, B, C)` used to design it, without testing parameter mismatch, unmodeled dynamics, or out-of-sample generalization.",
+            "Inverting a matrix in Python using `np.linalg.inv`.",
+            "Using 6 electrodes instead of 32."
+          ],
+          answer: 0,
+          explain: "Rule 3 strictly forbids circular validation on noiseless nominal models; we must test under noise, plant–model mismatch (`ΔA, ΔB`), carry-over, and sensor dropouts."
+        },
+        {
+          q: "[Level 2 + Lab] Why does Constrained MPC outperform naive clipped LQR when driving a stressed user toward Calm under actuator limits?",
+          options: [
+            "Constrained MPC optimizes future inputs over a prediction horizon `H` while explicitly enforcing saturation (`u_min <= u_k <= u_max`) and slew-rate (`|Δu_k| <= Δu_max`) constraints.",
+            "Constrained MPC ignores actuator limits and applies infinite voltage.",
+            "LQR cannot run on 2D systems."
+          ],
+          answer: 0,
+          explain: "Unlike LQR (which computes unconstrained gains and clips after the fact), MPC plans ahead within physical actuator and slew-rate bounds."
+        },
+        {
+          q: "[Level 3 · Boss Check] What literature benchmark from Sayal et al. (2025) do we use to evaluate our simulated cohort non-responder fraction, and how must stochastic results be reported?",
+          options: [
+            "16–57% (mean 38%) non-responder rate; report fixed-seed cohort distributions (`mean ± SD` and `median [IQR]` across all N = 32 virtual subjects, never cherry-picked runs).",
+            "0% non-responders; report only Subject s01.",
+            "95% non-responders; report without random seeds."
+          ],
+          answer: 0,
+          explain: "Sayal et al. (2025) document that 16–57% (mean 38%) of neurofeedback users are non-responders; Rule 3 mandates fixed seeds and full cohort distributions."
         }
       ]
     }
@@ -620,8 +1019,12 @@ window.NOTEBOOK_DATA = {
 
   labMissions: {
     "circumplex": [
-      { id: "m1", prompt: "Mission 1: Target Calm (+0.75, -0.60) and UNCHECK Lighting + Haptics to expose the Tempo–Valence Crossover.", xp: 25 },
-      { id: "m2", prompt: "Mission 2: Re-enable Lighting + Haptics in Q4 (V* > 0.4, A* < -0.3) to restore Valence tracking.", xp: 25 }
+      { id: "m1", prompt: "Mission 1: Pick Calm (Q4: +0.75, -0.60) in Open-Loop mode to see why passive systems leave error high.", xp: 25 },
+      { id: "m2", prompt: "Mission 2: Switch to Closed-Loop (Δt = 0.5 s) in Q4 so tracking error ||e_k|| drops < 0.08.", xp: 25 }
+    ],
+    "deap-sam": [
+      { id: "m1", prompt: "Mission 1: Select Raw .dat['labels'] to expose the 439 inverted Quadrant-1 trials (where 9.00 → 0.00).", xp: 25 },
+      { id: "m2", prompt: "Mission 2: Enable Restored participant_ratings.xls and scrub past t = 3.0 s into the 60 s stimulus.", xp: 25 }
     ],
     "montage": [
       { id: "m1", prompt: "Mission 1: Switch to wearable_4 (29 features, 0.822 ms/step) to inspect the minimal headband.", xp: 25 },
@@ -629,23 +1032,31 @@ window.NOTEBOOK_DATA = {
     ],
     "causality": [
       { id: "m1", prompt: "Mission 1: Select Acausal filtfilt to reveal the 27.60 log-power backward leakage before sample 1024.", xp: 25 },
-      { id: "m2", prompt: "Mission 2: Select Compare Both to contrast zero-leakage Causal SOS against filtfilt.", xp: 25 }
+      { id: "m2", prompt: "Mission 2: Select Compare Both to contrast zero-leakage Causal SOS (24.42 ms lag) against filtfilt.", xp: 25 }
     ],
     "eeg-bands": [
       { id: "m1", prompt: "Mission 1: Set F4 and F3 sliders so FAA (F4 - F3) exceeds +1.00 (Strong Positive / Approach bias).", xp: 25 },
-      { id: "m2", prompt: "Mission 2: Invert the sliders so FAA drops below -0.80 (Withdrawal / Negative bias).", xp: 25 }
+      { id: "m2", prompt: "Mission 2: Invert the sliders so FAA drops below -0.80 while raising Fz Theta (High TBR).", xp: 25 }
     ],
     "gsr-parallel": [
       { id: "m1", prompt: "Mission 1: Switch to Naive Subtract to observe the fake negative phase-mismatch artifact (4.86 s delay).", xp: 25 },
-      { id: "m2", prompt: "Mission 2: Return to Parallel SCR to verify the clean 331.98 ms phasic response.", xp: 25 }
+      { id: "m2", prompt: "Mission 2: Return to Parallel SCR to verify the clean 331.98 ms phasic response and 5 GSR features.", xp: 25 }
     ],
-    "timeline": [
-      { id: "m1", prompt: "Mission 1: Scrub to Baseline Fixation (t < 3.0 s) where P_base is calibrated.", xp: 25 },
-      { id: "m2", prompt: "Mission 2: Scrub past t = 33.0 s so the 30 s BVP buffer switches ω_BVP from 0.1 to 1.0.", xp: 25 }
+    "bvp-hrv": [
+      { id: "m1", prompt: "Mission 1: Set Elapsed Time < 2.0 s (< 2 beats) to trigger Cold-Start Fallback (ω_BVP = 0.1).", xp: 25 },
+      { id: "m2", prompt: "Mission 2: Advance Elapsed Time >= 32.0 s (>= 10 beats) to activate Lomb–Scargle LF/HF (ω_BVP = 1.0).", xp: 25 }
     ],
     "kalman-preview": [
       { id: "m1", prompt: "Mission 1: Enable Simulate EEG Dropout (t = 20–40 s) to test observer resilience.", xp: 25 },
       { id: "m2", prompt: "Mission 2: Increase Model Trust (1/Q >= 8) during dropout to smooth the state estimate.", xp: 25 }
+    ],
+    "three-actuators-lab": [
+      { id: "m1", prompt: "Mission 1: Select Music Alone in Q4 Calm to expose the Tempo–Valence Crossover drop.", xp: 25 },
+      { id: "m2", prompt: "Mission 2: Enable 180 lx Green Light (Li 2025) + 52 bpm Wrist Haptics (Azevedo 2017) to decouple V & A.", xp: 25 }
+    ],
+    "mpc-benchmark-lab": [
+      { id: "m1", prompt: "Mission 1: Set Plant–Model Mismatch ΔA >= 25% in LQR to see actuator clipping.", xp: 25 },
+      { id: "m2", prompt: "Mission 2: Switch to Constrained MPC / Fuzzy-MPC at ΔA >= 25% to keep saturation violations at 0.", xp: 25 }
     ]
   },
 

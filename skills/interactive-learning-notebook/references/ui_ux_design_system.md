@@ -4,9 +4,17 @@ This rulebook combines **Impeccable** (`Read` + `Operate` craft floor) and **UI/
 
 ---
 
-## 1. The 5 Dark / Light Theme Pairs
+## 1. The 5 Radically Distinct Design Worlds (Impeccable Directions · Dark & Light)
 
-Every notebook ships with **both** Dark and Light modes (`body.light-theme`) persisted in `localStorage`. Use the user's chosen pair (default: Pair 1):
+**CRITICAL RULE:** The 5 themes must NOT merely swap hex colors on the same rounded card! Each theme (`body[data-theme-pair="1".."5"]`) is a complete **Design World** that changes **typography (`--font-display`, `--font-sans`), corner geometry (`--radius`, `--radius-sm`), surface atmosphere (`background-image` grid/fold/glow), and hardware/card chrome**:
+
+| World | Vibe & Inspiration | Corner Radius | Typography | Signature Surface & Chrome |
+|---|---|---|---|---|
+| **01 · 3Blue1Brown Cinema** | Velvety mathematical theater (`#0b0e14` / `#f6f7f9`) | `14px` / `10px` | Classical math serif (`STIX Two Text`, `Georgia`) + humanist sans | Subtle cyan/gold radial spotlight + luminous vector borders |
+| **02 · Starship Crew Terminal** | Tactical phosphor cockpit HUD (`#040906` / `#eaf0ec`) | `0px` / `0px` (sharp) | **100% Monospace** (`Fira Code`, `JetBrains Mono`) + uppercase headers | 28px coordinate grid background + inset phosphor border frame |
+| **03 · Miura Fold Sheet** | Architectural origami paper (`#141518` / `#f3efe6`) | `2px` / `2px` (crisp) | High-contrast editorial serif + Swiss grotesque sans | Diagonal 48px fold crease pattern + `4px 4px 0` hard paper shadow |
+| **04 · VU Meter Bridge** | Studio analog hardware console (`#181512` / `#e6e0d6`) | `6px` / `4px` (bezel) | Industrial geometric sans + instrument mono readouts | Recessed `inset` meter cells + `3px` tactile bottom-lip buttons |
+| **05 · Shallow Basin** | Organic bioluminescent journal (`#060d18` / `#eef6f8`) | `22px` / `14px` (organic) | Literary serif display + clean sans | Pelagic radial basin glow + aqua/coral bioluminescent accents |
 
 ### Pair 1: 3Blue1Brown Midnight & Chalk *(Math, Science, Control, Physics)*
 ```css

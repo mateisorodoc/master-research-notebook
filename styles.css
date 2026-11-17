@@ -685,95 +685,208 @@ details.deep-dive summary {
 }
 
 /* ==========================================================================
-   Zero-to-Hero Upgrades: 5 Dark/Light Theme Pairs, Split Studio, Missions, Print
+   Zero-to-Hero Upgrades: 5 Radically Distinct Design Worlds (Impeccable Vibes),
+   3-Tier Depth Chrome, Split Studio, Missions, Print
    ========================================================================== */
 
-/* Pair 2: Nordic Slate & Paper */
+/* World 1: 3Blue1Brown Cinema (Velvety Mathematical Theater) */
+body[data-theme-pair="1"]:not(.light-theme) {
+  background-image: radial-gradient(circle at 80% 10%, rgba(88, 196, 221, 0.08), transparent 45%),
+                    radial-gradient(circle at 15% 85%, rgba(249, 200, 70, 0.06), transparent 40%);
+}
+
+/* World 2: Starship Crew Terminal (Tactical Phosphor Telemetry HUD) */
 body[data-theme-pair="2"] {
-  --bg: #11161d; --bg-elev: #171e28; --bg-card: #1c2430; --bg-code: #0c1016;
-  --border: #2a3444; --border-strong: #3f4e65;
-  --text: #e6edf3; --text-muted: #93a1b5;
-  --b1b-blue: #6cb6ff; --b1b-blue-dim: rgba(108, 182, 255, 0.14);
-  --b1b-gold: #d29922; --b1b-gold-dim: rgba(210, 153, 34, 0.14);
-  --b1b-green: #57ab5a; --b1b-green-dim: rgba(87, 171, 90, 0.14);
-  --b1b-coral: #f47067; --b1b-coral-dim: rgba(244, 112, 103, 0.14);
-  --b1b-purple: #b083f0; --b1b-purple-dim: rgba(176, 131, 240, 0.15);
+  --bg: #040906; --bg-elev: #08120c; --bg-card: #0a1710; --bg-code: #020503;
+  --border: #173b27; --border-strong: #256341;
+  --text: #d8fbe6; --text-muted: #6ea885;
+  --b1b-blue: #00ff88; --b1b-blue-dim: rgba(0, 255, 136, 0.13);
+  --b1b-gold: #ffb000; --b1b-gold-dim: rgba(255, 176, 0, 0.14);
+  --b1b-green: #38bdf8; --b1b-green-dim: rgba(56, 189, 248, 0.14);
+  --b1b-coral: #ff4757; --b1b-coral-dim: rgba(255, 71, 87, 0.15);
+  --b1b-purple: #c084fc; --b1b-purple-dim: rgba(192, 132, 252, 0.15);
+  --radius: 0px;
+  --radius-sm: 0px;
+  --font-display: "Fira Code", "JetBrains Mono", Consolas, monospace;
+  --font-sans: "Fira Code", "JetBrains Mono", Consolas, monospace;
+  background-image: linear-gradient(rgba(0, 255, 136, 0.03) 1px, transparent 1px),
+                    linear-gradient(90deg, rgba(0, 255, 136, 0.03) 1px, transparent 1px);
+  background-size: 28px 28px;
 }
 body.light-theme[data-theme-pair="2"] {
-  --bg: #f8fafc; --bg-elev: #ffffff; --bg-card: #ffffff; --bg-code: #f1f5f9;
-  --border: #cbd5e1; --border-strong: #94a3b8;
-  --text: #0f172a; --text-muted: #475569;
-  --b1b-blue: #1d4ed8; --b1b-blue-dim: rgba(29, 78, 216, 0.10);
-  --b1b-gold: #a16207; --b1b-gold-dim: rgba(161, 98, 7, 0.10);
-  --b1b-green: #15803d; --b1b-green-dim: rgba(21, 128, 61, 0.10);
-  --b1b-coral: #be123c; --b1b-coral-dim: rgba(190, 18, 60, 0.10);
-  --b1b-purple: #7e22ce; --b1b-purple-dim: rgba(126, 34, 206, 0.10);
+  --bg: #eaf0ec; --bg-elev: #f4f8f5; --bg-card: #ffffff; --bg-code: #dde7e0;
+  --border: #94b09e; --border-strong: #4d705a;
+  --text: #091e12; --text-muted: #385745;
+  --b1b-blue: #047857; --b1b-blue-dim: rgba(4, 120, 87, 0.12);
+  --b1b-gold: #b45309; --b1b-gold-dim: rgba(180, 83, 9, 0.12);
+  --b1b-green: #0369a1; --b1b-green-dim: rgba(3, 105, 161, 0.12);
+  --b1b-coral: #be123c; --b1b-coral-dim: rgba(190, 18, 60, 0.12);
+  --b1b-purple: #6d28d9; --b1b-purple-dim: rgba(109, 40, 217, 0.12);
+}
+body[data-theme-pair="2"] h1,
+body[data-theme-pair="2"] h2,
+body[data-theme-pair="2"] h3 {
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+body[data-theme-pair="2"] .surface,
+body[data-theme-pair="2"] .surface-lab {
+  border-width: 1px;
+  box-shadow: inset 0 0 0 1px rgba(0, 255, 136, 0.08);
 }
 
-/* Pair 3: Emerald Lab & Botanical */
+/* World 3: Miura Fold Sheet (Crisp Architectural Paper & Swiss Grid) */
 body[data-theme-pair="3"] {
-  --bg: #091310; --bg-elev: #0f1e19; --bg-card: #132620; --bg-code: #060d0b;
-  --border: #203c33; --border-strong: #325b4e;
-  --text: #e8f3ee; --text-muted: #93b5a7;
-  --b1b-blue: #34d399; --b1b-blue-dim: rgba(52, 211, 153, 0.14);
-  --b1b-gold: #fbbf24; --b1b-gold-dim: rgba(251, 191, 36, 0.14);
-  --b1b-green: #38bdf8; --b1b-green-dim: rgba(56, 189, 248, 0.14);
-  --b1b-coral: #fb7185; --b1b-coral-dim: rgba(251, 113, 133, 0.15);
-  --b1b-purple: #a78bfa; --b1b-purple-dim: rgba(167, 139, 250, 0.15);
+  --bg: #141518; --bg-elev: #1b1d21; --bg-card: #212328; --bg-code: #0e0f12;
+  --border: #383c45; --border-strong: #5c6270;
+  --text: #f4f1ea; --text-muted: #a8a49c;
+  --b1b-blue: #ff5a36; --b1b-blue-dim: rgba(255, 90, 54, 0.14);
+  --b1b-gold: #e5b842; --b1b-gold-dim: rgba(229, 184, 66, 0.14);
+  --b1b-green: #38b2ac; --b1b-green-dim: rgba(56, 178, 172, 0.14);
+  --b1b-coral: #f56565; --b1b-coral-dim: rgba(245, 101, 101, 0.15);
+  --b1b-purple: #9f7aea; --b1b-purple-dim: rgba(159, 122, 234, 0.15);
+  --radius: 2px;
+  --radius-sm: 2px;
+  --font-display: "Georgia", "STIX Two Text", "Times New Roman", serif;
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background-image: linear-gradient(135deg, rgba(255,255,255,0.025) 25%, transparent 25%, transparent 50%, rgba(255,255,255,0.025) 50%, rgba(255,255,255,0.025) 75%, transparent 75%, transparent);
+  background-size: 48px 48px;
 }
 body.light-theme[data-theme-pair="3"] {
-  --bg: #f4f9f6; --bg-elev: #ffffff; --bg-card: #ffffff; --bg-code: #e8f2ec;
-  --border: #c6ddd0; --border-strong: #8fb8a3;
-  --text: #0c1f17; --text-muted: #3d5a4e;
-  --b1b-blue: #047857; --b1b-blue-dim: rgba(4, 120, 87, 0.10);
-  --b1b-gold: #b45309; --b1b-gold-dim: rgba(180, 83, 9, 0.10);
-  --b1b-green: #0369a1; --b1b-green-dim: rgba(3, 105, 161, 0.10);
-  --b1b-coral: #be123c; --b1b-coral-dim: rgba(190, 18, 60, 0.10);
-  --b1b-purple: #6d28d9; --b1b-purple-dim: rgba(109, 40, 217, 0.10);
+  --bg: #f3efe6; --bg-elev: #faf7f0; --bg-card: #ffffff; --bg-code: #e8e2d5;
+  --border: #bfb6a4; --border-strong: #6e6658;
+  --text: #161513; --text-muted: #575248;
+  --b1b-blue: #c83214; --b1b-blue-dim: rgba(200, 50, 20, 0.11);
+  --b1b-gold: #9a6b00; --b1b-gold-dim: rgba(154, 107, 0, 0.12);
+  --b1b-green: #0f766e; --b1b-green-dim: rgba(15, 118, 110, 0.11);
+  --b1b-coral: #b91c1c; --b1b-coral-dim: rgba(185, 28, 28, 0.11);
+  --b1b-purple: #5b21b6; --b1b-purple-dim: rgba(91, 33, 182, 0.11);
+}
+body[data-theme-pair="3"] .surface {
+  box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.22);
 }
 
-/* Pair 4: Warm Espresso & Parchment */
+/* World 4: VU Meter Bridge (Warm Studio Analog Hardware Console) */
 body[data-theme-pair="4"] {
-  --bg: #151210; --bg-elev: #1e1916; --bg-card: #251f1b; --bg-code: #0f0d0b;
-  --border: #3a3029; --border-strong: #56473d;
-  --text: #f3ece4; --text-muted: #b8a898;
-  --b1b-blue: #e5a95e; --b1b-blue-dim: rgba(229, 169, 94, 0.15);
-  --b1b-gold: #72b4d4; --b1b-gold-dim: rgba(114, 180, 212, 0.14);
-  --b1b-green: #7cc49b; --b1b-green-dim: rgba(124, 196, 155, 0.14);
-  --b1b-coral: #e07a5f; --b1b-coral-dim: rgba(224, 122, 95, 0.15);
-  --b1b-purple: #9b8ec4; --b1b-purple-dim: rgba(155, 142, 196, 0.15);
+  --bg: #181512; --bg-elev: #221e1a; --bg-card: #2a241f; --bg-code: #100e0c;
+  --border: #423930; --border-strong: #665749;
+  --text: #f5ede2; --text-muted: #b8a996;
+  --b1b-blue: #ff6b2b; --b1b-blue-dim: rgba(255, 107, 43, 0.15);
+  --b1b-gold: #f5b82e; --b1b-gold-dim: rgba(245, 184, 46, 0.15);
+  --b1b-green: #68d391; --b1b-green-dim: rgba(104, 211, 145, 0.14);
+  --b1b-coral: #fc8181; --b1b-coral-dim: rgba(252, 129, 129, 0.15);
+  --b1b-purple: #76e4f7; --b1b-purple-dim: rgba(118, 228, 247, 0.14);
+  --radius: 6px;
+  --radius-sm: 4px;
+  --font-display: "Fira Sans", "Segoe UI", system-ui, sans-serif;
 }
 body.light-theme[data-theme-pair="4"] {
-  --bg: #faf6f0; --bg-elev: #ffffff; --bg-card: #ffffff; --bg-code: #f0e9df;
-  --border: #dfd3c3; --border-strong: #bca88e;
-  --text: #1f1914; --text-muted: #5c4e41;
-  --b1b-blue: #9a5b13; --b1b-blue-dim: rgba(154, 91, 19, 0.11);
-  --b1b-gold: #1c658c; --b1b-gold-dim: rgba(28, 101, 140, 0.10);
-  --b1b-green: #1f6f4a; --b1b-green-dim: rgba(31, 111, 74, 0.10);
-  --b1b-coral: #b53d24; --b1b-coral-dim: rgba(181, 61, 36, 0.10);
-  --b1b-purple: #5b4896; --b1b-purple-dim: rgba(91, 72, 150, 0.10);
+  --bg: #e6e0d6; --bg-elev: #f2ede4; --bg-card: #faf7f2; --bg-code: #d8d0c3;
+  --border: #b8ad9c; --border-strong: #7d7262;
+  --text: #1c1814; --text-muted: #594f43;
+  --b1b-blue: #c43c00; --b1b-blue-dim: rgba(196, 60, 0, 0.12);
+  --b1b-gold: #946200; --b1b-gold-dim: rgba(148, 98, 0, 0.12);
+  --b1b-green: #15803d; --b1b-green-dim: rgba(21, 128, 61, 0.11);
+  --b1b-coral: #b91c1c; --b1b-coral-dim: rgba(185, 28, 28, 0.11);
+  --b1b-purple: #0e7490; --b1b-purple-dim: rgba(14, 116, 144, 0.11);
+}
+body[data-theme-pair="4"] .readout-cell {
+  box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.35);
+}
+body[data-theme-pair="4"] .btn {
+  border-bottom-width: 3px;
 }
 
-/* Pair 5: Obsidian Studio & Crisp Ivory */
+/* World 5: Shallow Basin & Cephalopod (Organic Bioluminescent Journal) */
 body[data-theme-pair="5"] {
-  --bg: #0d0d12; --bg-elev: #14141d; --bg-card: #1a1a26; --bg-code: #08080c;
-  --border: #2a2a3d; --border-strong: #41415e;
-  --text: #f0f0f5; --text-muted: #9c9cb4;
-  --b1b-blue: #818cf8; --b1b-blue-dim: rgba(129, 140, 248, 0.15);
-  --b1b-gold: #fbbf24; --b1b-gold-dim: rgba(251, 191, 36, 0.14);
-  --b1b-green: #4ade80; --b1b-green-dim: rgba(74, 222, 128, 0.14);
-  --b1b-coral: #f87171; --b1b-coral-dim: rgba(248, 113, 113, 0.15);
-  --b1b-purple: #22d3ee; --b1b-purple-dim: rgba(34, 211, 238, 0.14);
+  --bg: #060d18; --bg-elev: #0b1626; --bg-card: #101f33; --bg-code: #040911;
+  --border: #1d3654; --border-strong: #2e5580;
+  --text: #eaf6ff; --text-muted: #8ab0cf;
+  --b1b-blue: #00e5ff; --b1b-blue-dim: rgba(0, 229, 255, 0.14);
+  --b1b-gold: #ffd166; --b1b-gold-dim: rgba(255, 209, 102, 0.14);
+  --b1b-green: #2dd4bf; --b1b-green-dim: rgba(45, 212, 191, 0.15);
+  --b1b-coral: #ff5c77; --b1b-coral-dim: rgba(255, 92, 119, 0.15);
+  --b1b-purple: #b388ff; --b1b-purple-dim: rgba(179, 136, 255, 0.15);
+  --radius: 22px;
+  --radius-sm: 14px;
+  --font-display: "Georgia", "STIX Two Text", serif;
+  background-image: radial-gradient(ellipse at 50% 0%, rgba(0, 229, 255, 0.10), transparent 60%);
 }
 body.light-theme[data-theme-pair="5"] {
-  --bg: #f9f9fb; --bg-elev: #ffffff; --bg-card: #ffffff; --bg-code: #eeeef4;
-  --border: #d8d8e6; --border-strong: #a7a7c2;
-  --text: #14141b; --text-muted: #4e4e66;
-  --b1b-blue: #4338ca; --b1b-blue-dim: rgba(67, 56, 202, 0.10);
-  --b1b-gold: #b45309; --b1b-gold-dim: rgba(180, 83, 9, 0.10);
-  --b1b-green: #15803d; --b1b-green-dim: rgba(21, 128, 61, 0.10);
-  --b1b-coral: #b91c1c; --b1b-coral-dim: rgba(185, 28, 28, 0.10);
-  --b1b-purple: #0e7490; --b1b-purple-dim: rgba(14, 116, 144, 0.10);
+  --bg: #eef6f8; --bg-elev: #f8fcfd; --bg-card: #ffffff; --bg-code: #e0eef2;
+  --border: #b8d8e3; --border-strong: #74abc0;
+  --text: #0a222e; --text-muted: #3d6375;
+  --b1b-blue: #0369a1; --b1b-blue-dim: rgba(3, 105, 161, 0.11);
+  --b1b-gold: #a16207; --b1b-gold-dim: rgba(161, 98, 7, 0.11);
+  --b1b-green: #0f766e; --b1b-green-dim: rgba(15, 118, 110, 0.11);
+  --b1b-coral: #be123c; --b1b-coral-dim: rgba(190, 18, 60, 0.11);
+  --b1b-purple: #6d28d9; --b1b-purple-dim: rgba(109, 40, 217, 0.11);
+}
+
+/* 3-Tier Depth Cards & Pipeline Steps */
+.depth-tier-card {
+  border-radius: var(--radius-sm);
+  padding: 16px;
+  border: 1px solid var(--border);
+  background: var(--bg-elev);
+}
+.depth-tier-card.tier-1 {
+  border-color: var(--b1b-blue);
+}
+.depth-tier-card.tier-2 {
+  border-color: var(--b1b-gold);
+}
+.depth-tier-card.tier-3 {
+  border-color: var(--b1b-purple);
+}
+
+.pipeline-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 10px 0 14px;
+}
+.pipeline-step-row {
+  background: var(--bg-code);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* Visual Design Worlds Gallery Cards (Home) */
+.world-strip {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(185px, 1fr));
+  gap: 10px;
+  margin-top: 12px;
+}
+.world-card {
+  cursor: pointer;
+  text-align: left;
+  padding: 12px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--bg-elev);
+  color: var(--text);
+  transition: all var(--transition);
+}
+.world-card:hover,
+.world-card[aria-pressed="true"] {
+  border-color: var(--b1b-blue);
+  background: var(--b1b-blue-dim);
+}
+.world-swatches {
+  display: flex;
+  gap: 5px;
+  margin-bottom: 8px;
+}
+.world-swatch {
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
+  border: 1px solid rgba(255,255,255,0.25);
 }
 
 /* 3-Tier Depth Switcher & Lab Missions */
@@ -790,7 +903,7 @@ body.light-theme[data-theme-pair="5"] {
 .depth-btn {
   min-height: 36px;
   padding: 6px 12px;
-  border-radius: 7px;
+  border-radius: var(--radius-sm);
   border: 1px solid transparent;
   background: transparent;
   color: var(--text-muted);

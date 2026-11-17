@@ -195,6 +195,16 @@
       playSound("tap");
       window.dispatchEvent(new CustomEvent("depthchange", { detail: { level: lvl } }));
     },
+    setThemePair(val) {
+      const st = loadProgress();
+      st.themePair = String(val);
+      saveProgress(st);
+      document.body.setAttribute("data-theme-pair", String(val));
+      const sel = document.getElementById("themePairSelect");
+      if (sel) sel.value = String(val);
+      playSound("tap");
+      window.dispatchEvent(new CustomEvent("themechange"));
+    },
     setupHiDPICanvas(canvas, logicalW, logicalH) {
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
       canvas.width = logicalW * dpr;
@@ -248,11 +258,11 @@
       sel.className = "theme-select";
       sel.setAttribute("aria-label", "Select color theme pair");
       const pairs = [
-        ["1", "Theme 1: 3b1b Midnight"],
-        ["2", "Theme 2: Nordic Slate"],
-        ["3", "Theme 3: Emerald Lab"],
-        ["4", "Theme 4: Warm Espresso"],
-        ["5", "Theme 5: Obsidian Studio"]
+        ["1", "01 · 3b1b Cinema"],
+        ["2", "02 · Starship Terminal"],
+        ["3", "03 · Miura Fold Sheet"],
+        ["4", "04 · VU Meter Bridge"],
+        ["5", "05 · Shallow Basin"]
       ];
       pairs.forEach(([val, label]) => {
         const opt = document.createElement("option");

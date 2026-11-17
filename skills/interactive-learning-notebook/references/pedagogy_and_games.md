@@ -13,29 +13,33 @@ Every concept in `learn.html` must guide the student through 4 cognitive stages:
   - *Bad:* "This module implements causal Butterworth filtering."
   - *Good:* "Imagine your emotion controller reacts at $t = 2.0\text{ s}$ to a brainwave spike that won't happen until $t = 3.5\text{ s}$. How did your code cheat—and how do we stop it?"
 
-### Stage 2: 3-Tier Adaptive Depth (`1. Intuition` → `2. Practitioner` → `3. Mastery`)
-Never force a beginner to read dense math first, and never bore an expert with only analogies. Populate all three depth tiers for every concept:
-- **Level 1 (`Intuition`):** Everyday physical/visual analogy (e.g., thermostat, traffic light, postal sorting, recipe). Zero unexplained acronyms.
-- **Level 2 (`Practitioner`):** How the mechanism works step-by-step in the project, inputs → outputs, design choices, and trade-offs.
-- **Level 3 (`Mastery / Formal`):**
-  - *For STEM / Code:* Exact formula (`formalRule`), variable definitions, complexity/latency, and verified file/method reference (`sourceRef`).
-  - *For Medicine / Humanities / Law / Business:* Primary evidence, formal statutory/clinical criteria, historical primary source quotes, and edge cases/counter-arguments.
+### Stage 2: 3 Radically Distinct Depth Tiers (`1. Intuition` → `2. Practitioner` → `3. Mastery`)
+**CRITICAL BAN:** Never display the same paragraph across Level 1, Level 2, and Level 3! Each depth tier MUST have its own distinct structure, voice, and visual chrome (`.depth-tier-card.tier-1`, `.tier-2`, `.tier-3`):
 
-### Stage 3: Goal-Driven Interactive Lab (With 2–3 Auto-Verified Missions)
-Sliders without a goal are toys; sliders with a challenge teach intuition.
-- Every Interactive Lab MUST display a **Lab Missions Bar** (`m1`, `m2`, `m3`) above or below the controls.
-- Inside the lab's `update()` function in `learn.js`, check whether the current slider/canvas state satisfies each mission's condition:
-  - Example: `if (filterMode === 'causal' && cutoffHz >= 4 && cutoffHz <= 8) completeMission(concept.id, 'm1', 25);`
-- When a mission condition is met:
-  1. Mark the mission pill green (`✓ Cleared +25 XP`),
-  2. Call `playSound('missionClear')`,
-  3. Persist `slug-id:m1` in `localStorage`.
+- **Level 1 (`level1` — Intuition & Everyday Mental Model):**
+  - `analogy`: Story-driven everyday metaphor (thermostat, prism, orchestra, sailboat) with **zero** unexplained jargon or formulas.
+  - `naiveTrap`: *"Why Naive Approaches Fail"* callout box explaining the intuitive trap.
+  - `labGuide`: Direct 1-sentence invitation pointing to what to click in the Lab on the right.
+- **Level 2 (`level2` — Practitioner Pipeline & Engineering):**
+  - `pipeline`: 4 numbered step-by-step execution stages (`.pipeline-step-row`) showing exact inputs → processing → outputs.
+  - `tradeoffs`: Real-world engineering trade-offs (why this window length, sampling rate, or architecture was chosen over alternatives).
+  - `labGuide`: Concrete guide to clearing Mission 1 and Mission 2 in the Lab.
+- **Level 3 (`level3` — Formal Math, Proofs & Source Code):**
+  - `math`: Exact equation, formal rule, or statutory/clinical criterion.
+  - `variables[]`: Symbol-by-symbol dictionary defining every variable and unit in the formula.
+  - `codeWalkthrough`: Exact file path, class/method name, algorithmic implementation, and unit-test/audit proof.
 
-### Stage 4: 3-Tier Concept Mastery Check (`Warm-Up` → `Predict` → `Boss`)
-Instead of random trivia, structure every concept's `exercises` as a 3-rung ladder:
-1. **`warmup`:** Checks basic comprehension of the Level 1 mental model.
-2. **`predict`:** Asks the learner to predict what happens when a parameter or condition changes (reinforcing the Interactive Lab).
-3. **`boss`:** A realistic diagnostic or synthesis question requiring Level 2/3 mastery. Passing all 3 rungs unlocks the Concept's **Mastered** badge!
+### Stage 3: Strict 1:1 Dedicated Interactive Lab (`N Concepts = N Distinct Labs`)
+- **Never** share a generic lab across multiple concepts or omit anything taught in Theory!
+- If the notebook has 10 concepts, build **10 distinct Interactive Labs** (`1 per concept`), where the exact parameters, failure modes, and equations taught in that concept's Theory are directly manipulated on the canvas/sliders.
+- Every Interactive Lab MUST display a **Lab Missions Bar** (`m1`, `m2`) above the canvas/controls that auto-detects when the learner hits the target state, marks the pill green (`✓ Cleared +25 XP`), and plays `playSound('missionClear')`.
+
+### Stage 4: Strictly Aligned 3-Rung Mastery Check (`100% Derived From Theory + Lab`)
+- **Zero Unintroduced Facts:** Every question in a concept's Mastery Check MUST test strictly what was taught in that concept's Level 1, Level 2, Level 3, and Interactive Lab—never ask trivia about facts not covered on the page!
+- Structure the 3 questions per concept as a strict 1:1 ladder:
+  1. **Q1 (`[Level 1 · Warm-Up]`):** Tests the core mental model and *"Why Naive Approaches Fail"* from Level 1.
+  2. **Q2 (`[Level 2 + Lab]`):** Tests the 4-stage pipeline and what the user just observed while completing the Interactive Lab missions.
+  3. **Q3 (`[Level 3 · Boss Check]`):** Tests the formal equation, variable definitions, or verified code/audit proof from Level 3.
 
 ---
 
