@@ -5,12 +5,12 @@
 | File | Responsibility |
 |---|---|
 | `index.html` | **Home & Mission Control:** Live interactive `<canvas>` hero, XP / Combo / Rank progress (`Novice → Grandmaster`), **Quick 3-Min Weakest-Concept Review** card (`missedQuestions`), **Capstone Exam** unlock card, and Concept Pack grid with mission/quiz badges. |
-| `learn.html` + `learn.js` | **Zero-to-Hero Concept Studio:** Horizontal concept rail, sticky **3-Tier Depth Switcher** (`1. Intuition` ↔ `2. Practitioner` ↔ `3. Mastery`), desktop split-pane / mobile sticky-canvas layout, **2–3 Auto-Verified Lab Missions** per lab, and **3-Stage Concept Check** (*Warm-Up*, *Predict the Output*, *Boss Check*). |
+| `learn.html` + `learn.js` | **Zero-to-Hero Concept Studio:** Horizontal concept rail, **3-Tier Depth Switcher** (`1. Intuition` ↔ `2. Pipeline` ↔ `3. Math & Code`), desktop split-pane / mobile clean vertical flow, **1:1 Dedicated Interactive Lab + 2 Auto-Verified Lab Missions** per concept, and **3-Stage Concept Check** (*Warm-Up*, *Level 2 + Lab*, *Boss Check*). |
 | `games.html` | **Mastery Arcade & Capstone Exam:** Live combo multiplier (`2x`, `3x`, `5x`), **5 Game Modes** (*Predict the Outcome*, *Order the Pipeline/Argument*, *Complete the Code/Formula*, *Spot the Flaw*, *60s Blitz*), plus the multi-step **Zero-to-Hero Capstone Challenge**. |
 | `map.html` | **Interactive Knowledge Map:** Clickable/tap-friendly dependency graph (`<svg>` + HTML) showing locked/unlocked/mastered status per concept node and deep-linking to `learn.html#<id>`. |
 | `glossary.html` | **Searchable Dictionary & Formula/Rule Sheet:** Instant search (`/`) + category chips + deep links + `@media print` cheat-sheet support. |
 | `roadmap.html` | **Roadmap, Evidence Ledger & File Map:** Project phases, verified empirical/source table, complete clickable Codebase/Document Map, and `@media print` cheat-sheet support. |
-| `styles.css` | Shared responsive CSS implementing the chosen Theme Pair (`references/ui_ux_design_system.md`), desktop split-studio, mobile sticky canvas, bottom nav, and `@media print`. |
+| `styles.css` | Shared responsive CSS implementing the 5 Impeccable Design Worlds (`references/ui_ux_design_system.md`), desktop split-studio, mobile touch carousels & `1fr` grids, bottom nav, and `@media print`. |
 | `shared.js` | Theme toggle, `localStorage` state & Rank engine, Web Audio API synthesizer + `navigator.vibrate` + 1-tap Mute, keyboard shortcut router (`1–4`, `Enter`, `J/K`, `D`, `M`, `/`), HiDPI `<canvas>` helper. |
 | `notebook-data.js` | Single source of truth (`window.NOTEBOOK_DATA`) holding all verified concepts, 3-tier explanations, lab missions, 5 game modes, capstone exam, map graph, glossary, and file map. |
 | `README.md` | Quick-start guide (`index.html` or `python -m http.server`) and sync rules. |

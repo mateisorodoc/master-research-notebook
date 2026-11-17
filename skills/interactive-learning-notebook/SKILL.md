@@ -39,7 +39,10 @@ This skill adapts to **any subject matter, human language, or learner background
 4. **User Choice on Existing Notebooks:** If the output folder already contains `index.html` or `notebook-data.js`, **never overwrite silently**. Ask the user to choose: **(a) Audit & Incrementally Update** or **(b) Clean Rebuild**.
 5. **Impeccable Mobile + Desktop UI/UX:** Follow `references/ui_ux_design_system.md` strictly:
    - **5 Dark/Light Theme Pairs** with WCAG AA contrast (`>= 4.5:1`).
-   - **Mobile (`< 768px`):** Fixed bottom tab bar (`<= 5` tabs), `>= 44×44px` tap targets, and **sticky compact `<canvas>` viewport** above lab sliders so users never scroll up and down on their phone to see a slider's effect.
+   - **Mobile (`< 860px`):**
+     - Fixed bottom tab bar (all 6 destinations reachable: `Home`, `Learn`, `Arcade`, `Map`, `Glossary`, `Roadmap`), `>= 44×44px` tap targets, and `padding-bottom: 96px` on `<main>`.
+     - Compact wrapping `.topbar` (`height: auto; flex-wrap: wrap;`), icon-only SVG mute/theme buttons, compact XP badge, and capped `.theme-select` (`max-width: 122px`) so `360px` phones never overflow horizontally.
+     - **Never** make `<canvas>` `position: sticky` inside a vertical mobile scroll stack (it floats over and blocks sliders/quiz cards below it); keep canvases in natural flow (`position: relative`), force `.grid-2` / `.grid-3` / `.mission-bar` to `1fr`, make `.world-strip` and `.pack-tabs` single-row horizontal touch carousels (`scroll-snap-type: x mandatory`), make `.depth-bar` a full-width 3-column grid, wrap wide diagrams in `.map-scroll-wrap { overflow-x: auto }` (`min-width: 680px`), and bind `pointerdown` (not just `click`) on interactive canvases.
    - **Desktop (`>= 1024px`):** Split-studio layout on `learn.html` (Theory & Depth switcher on the left, live Interactive Lab + Missions pinned on the right) + full keyboard shortcuts (`1–4`, `Enter`, `J/K`, `D`, `M`, `/`).
    - **Craft Floor Bans:** No eyebrow/kicker labels above headings, no gradient text, no emoji as UI chrome icons (use crisp inline `<svg>`), no ghost cards (border OR shadow, never both).
 6. **Zero-to-Hero Learning Mechanics & Strict 1:1 Alignment Built In:**
@@ -80,7 +83,7 @@ Ask only what is not already specified:
 ### Step 3: Generate the 6-Page Platform
 Read `references/notebook_architecture.md` and `references/ui_ux_design_system.md` and generate:
 - `index.html` — **Home & Mission Control** (live interactive `<canvas>` hero, XP / Combo / Rank badge `Novice → Grandmaster`, **Quick 3-Min Weakest-Concept Review**, **Capstone Exam** status card, and Concept Pack grid).
-- `learn.html` + `learn.js` — **Zero-to-Hero Concept Studio** (sticky 3-Tier Depth Switcher, desktop split-screen / mobile sticky-canvas layout, 2–3 auto-verified **Lab Missions** per lab, and 3-stage **Concept Mastery Check**: *Warm-Up*, *Predict the Output*, *Boss Question*).
+- `learn.html` + `learn.js` — **Zero-to-Hero Concept Studio** (3-Tier Depth Switcher, desktop split-screen / mobile clean vertical flow, 1:1 dedicated Interactive Lab with 2–3 auto-verified **Lab Missions** per concept, and 3-stage **Concept Mastery Check**: *Warm-Up*, *Level 2 + Lab*, *Boss Check*).
 - `games.html` — **Mastery Arcade & Capstone Exam** (Combo multiplier `2x/3x/5x`, 5 game modes: *Predict the Outcome*, *Order the Pipeline*, *Complete the Code/Formula*, *Spot the Flaw*, *60s Blitz*, plus the multi-step **Zero-to-Hero Capstone Challenge**).
 - `map.html` — **Interactive Knowledge Map** (clickable/tap-friendly dependency graph showing mastery status per node and deep-linking to `learn.html#<id>`).
 - `glossary.html` — **Searchable Dictionary & Formula/Rule Sheet** (instant search, category chips, deep links, and `@media print` PDF export).
@@ -98,6 +101,6 @@ Run all 4 verification checks before finishing:
 
 ## 4. Reference Files (Load Before Building)
 
-- [references/ui_ux_design_system.md](references/ui_ux_design_system.md) — 5 dark/light theme pairs, split-desktop & sticky-mobile layout CSS, craft floor bans, keyboard shortcuts, Web Audio synthesizer spec, and `@media print` rules.
+- [references/ui_ux_design_system.md](references/ui_ux_design_system.md) — 5 distinct Impeccable Design Worlds, split-desktop & mobile-responsive CSS rules, craft floor bans, keyboard shortcuts, Web Audio synthesizer spec, and `@media print` rules.
 - [references/notebook_architecture.md](references/notebook_architecture.md) — Complete 6-page file blueprint, `window.NOTEBOOK_DATA` schema, `localStorage` state & rank engine, and 6 domain-adaptable interactive lab archetypes.
 - [references/pedagogy_and_games.md](references/pedagogy_and_games.md) — How to write 3-tier explanations, design auto-verified Lab Missions, craft the 5 Arcade game modes, and build the multi-step Capstone Challenge.

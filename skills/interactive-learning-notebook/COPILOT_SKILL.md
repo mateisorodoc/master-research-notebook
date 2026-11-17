@@ -39,7 +39,10 @@ Adapt to **any subject matter, human language, or learner background**:
 4. **User Choice on Existing Notebooks:** If the output folder already contains `index.html` or `notebook-data.js`, **never overwrite silently**. Ask the user to choose: **(a) Audit & Incrementally Update** or **(b) Clean Rebuild**.
 5. **Impeccable Mobile + Desktop UI/UX:**
    - **5 Dark/Light Theme Pairs** with WCAG AA contrast (`>= 4.5:1`).
-   - **Mobile (`< 768px`):** Fixed bottom tab bar (`<= 5` tabs), `>= 44×44px` tap targets, and **sticky compact `<canvas>` viewport** above lab sliders so users never scroll up and down on their phone to see a slider's effect.
+   - **Mobile (`< 860px`):**
+     - Fixed bottom tab bar (all 6 destinations reachable: `Home`, `Learn`, `Arcade`, `Map`, `Glossary`, `Roadmap`), `>= 44×44px` tap targets, and `padding-bottom: 96px` on `<main>`.
+     - Compact wrapping `.topbar` (`height: auto; flex-wrap: wrap;`), icon-only SVG mute/theme buttons, compact XP badge, and capped `.theme-select` (`max-width: 122px`) so `360px` phones never overflow horizontally.
+     - **Never** make `<canvas>` `position: sticky` inside a vertical mobile scroll stack (it floats over and blocks sliders/quiz cards below it); keep canvases in natural flow (`position: relative`), force `.grid-2` / `.grid-3` / `.mission-bar` to `1fr`, make `.world-strip` and `.pack-tabs` single-row horizontal touch carousels (`scroll-snap-type: x mandatory`), make `.depth-bar` a full-width 3-column grid, wrap wide diagrams in `.map-scroll-wrap { overflow-x: auto }` (`min-width: 680px`), and bind `pointerdown` (not just `click`) on interactive canvases.
    - **Desktop (`>= 1024px`):** Split-studio layout on `learn.html` (Theory & Depth switcher on the left, live Interactive Lab + Missions pinned on the right) + full keyboard shortcuts (`1–4`, `Enter`, `J/K`, `D`, `M`, `/`).
    - **Craft Floor Bans:** No eyebrow/kicker labels above headings, no gradient text, no emoji as UI chrome icons (use crisp inline `<svg>`), no ghost cards (border OR shadow, never both).
 6. **Zero-to-Hero Learning Mechanics & Strict 1:1 Alignment Built In:**
@@ -79,7 +82,7 @@ Ask only what is not already specified:
 
 ### Step 3: Generate the 6-Page Platform
 - `index.html` — **Home & Mission Control** (live interactive `<canvas>` hero, XP / Combo / Rank badge `Novice → Grandmaster`, **Quick 3-Min Weakest-Concept Review**, **Capstone Exam** status card, and Concept Pack grid).
-- `learn.html` + `learn.js` — **Zero-to-Hero Concept Studio** (sticky 3-Tier Depth Switcher, desktop split-screen / mobile sticky-canvas layout, 2–3 auto-verified **Lab Missions** per lab, and 3-stage **Concept Mastery Check**: *Warm-Up*, *Predict the Output*, *Boss Question*).
+- `learn.html` + `learn.js` — **Zero-to-Hero Concept Studio** (3-Tier Depth Switcher, desktop split-screen / mobile clean vertical flow, 1:1 dedicated Interactive Lab with 2–3 auto-verified **Lab Missions** per concept, and 3-stage **Concept Mastery Check**: *Warm-Up*, *Level 2 + Lab*, *Boss Check*).
 - `games.html` — **Mastery Arcade & Capstone Exam** (Combo multiplier `2x/3x/5x`, 5 game modes: *Predict the Outcome*, *Order the Pipeline*, *Complete the Code/Formula*, *Spot the Flaw*, *60s Blitz*, plus the multi-step **Zero-to-Hero Capstone Challenge**).
 - `map.html` — **Interactive Knowledge Map** (clickable/tap-friendly dependency graph showing mastery status per node and deep-linking to `learn.html#<id>`).
 - `glossary.html` — **Searchable Dictionary & Formula/Rule Sheet** (instant search, category chips, deep links, and `@media print` PDF export).
@@ -216,7 +219,7 @@ body.light-theme[data-theme-pair="5"] {
 }
 ```
 
-### Desktop Split-Studio vs. Mobile Sticky-Viewport Layout
+### Desktop Split-Studio vs. Mobile Responsive Layout
 ```css
 @media (min-width: 1024px) {
   .studio-grid {
@@ -225,23 +228,26 @@ body.light-theme[data-theme-pair="5"] {
     gap: 24px;
     align-items: start;
   }
-  .studio-lab-pane {
-    position: sticky;
-    top: 76px;
-    max-height: calc(100vh - 96px);
-    overflow-y: auto;
-  }
+  .studio-lab-pane { position: sticky; top: 76px; }
 }
-@media (max-width: 767px) {
-  .lab-canvas-sticky {
-    position: sticky;
-    top: 58px;
-    z-index: 15;
-    background: var(--bg-card);
-    padding-bottom: 8px;
-    border-bottom: 1px solid var(--border);
-  }
-  main { padding-bottom: 92px; }
+@media (max-width: 1023px) {
+  .studio-grid { display: flex; flex-direction: column; gap: 16px; }
+  .lab-canvas-sticky { position: relative; top: auto; }
+}
+@media (max-width: 860px) {
+  .desktop-nav { display: none; }
+  .mobile-bottom-nav { display: flex; }
+  .page-wrap { padding: 16px 12px 96px; overflow-x: hidden; }
+  .topbar { height: auto; min-height: 54px; padding: 8px 12px; flex-wrap: wrap; gap: 8px; }
+  .hud-group { margin-left: auto; gap: 5px; flex-wrap: wrap; }
+  #hudStreak { display: none; }
+  .theme-select { max-width: 122px; min-height: 34px; font-size: 11.5px; }
+  .grid-2, .grid-3, .mission-bar { grid-template-columns: 1fr !important; gap: 10px; }
+  .world-strip, .pack-tabs { display: flex; flex-wrap: nowrap; overflow-x: auto; scroll-snap-type: x mandatory; }
+  .world-card { flex: 0 0 205px; scroll-snap-align: start; }
+  .depth-bar { display: grid; grid-template-columns: repeat(3, 1fr); width: 100%; }
+  .map-scroll-wrap { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .map-scroll-wrap canvas.stage-canvas { min-width: 680px; }
 }
 ```
 

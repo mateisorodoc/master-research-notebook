@@ -138,9 +138,9 @@ body.light-theme {
 
 ---
 
-## 2. Desktop Split-Studio vs. Mobile Sticky-Viewport Layout
+## 2. Desktop Split-Studio vs. Mobile Responsive Layout (`styles.css`)
 
-A common failure in educational web apps is making mobile users scroll up and down between sliders and the canvas, or making desktop users stare at a narrow single column. Use this adaptive layout on `learn.html`:
+A common failure in educational web apps is overflowing narrow `360px` phone topbars, clipping multi-column grids, shrinking wide node graphs until text is unreadable, or making a `<canvas>` `position: sticky` on mobile so it floats over and blocks the sliders/questions below it. Always include these exact responsive rules:
 
 ```css
 /* Desktop (>= 1024px): Two-column Studio — Theory on Left, Live Lab Pinned on Right */
@@ -154,12 +154,10 @@ A common failure in educational web apps is making mobile users scroll up and do
   .studio-lab-pane {
     position: sticky;
     top: 76px;
-    max-height: calc(100vh - 96px);
-    overflow-y: auto;
   }
 }
 
-/* Mobile (< 1024px): Clean Vertical Stack, Single-Row Touch Carousels, Zero Overlapping Sticky Canvas */
+/* Mobile & Tablet (< 1024px): Clean Vertical Flow (Never Sticky-Overlap Canvas!) */
 @media (max-width: 1023px) {
   .studio-grid {
     display: flex;
@@ -167,12 +165,33 @@ A common failure in educational web apps is making mobile users scroll up and do
     gap: 16px;
   }
   .lab-canvas-sticky {
-    position: relative; /* Never overlap/cover sliders or quiz cards below! */
+    position: relative;
     top: auto;
   }
-  main {
-    padding-bottom: 96px; /* Clear the fixed bottom tab bar */
+}
+
+/* Mobile (< 860px): Compact Topbar, 1fr Grids, Touch Carousels, Pannable Graphs */
+@media (max-width: 860px) {
+  .desktop-nav { display: none; }
+  .mobile-bottom-nav { display: flex; }
+  .page-wrap { padding: 16px 12px 96px; overflow-x: hidden; }
+  .topbar { height: auto; min-height: 54px; padding: 8px 12px; flex-wrap: wrap; gap: 8px; }
+  .hud-group { margin-left: auto; gap: 5px; flex-wrap: wrap; }
+  #hudStreak { display: none; }
+  .theme-select { max-width: 122px; min-height: 34px; font-size: 11.5px; }
+  .grid-2, .grid-3, .mission-bar { grid-template-columns: 1fr !important; gap: 10px; }
+  .world-strip, .pack-tabs {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
   }
+  .world-card { flex: 0 0 205px; scroll-snap-align: start; }
+  .depth-bar { display: grid; grid-template-columns: repeat(3, 1fr); width: 100%; }
+  .map-scroll-wrap { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .map-scroll-wrap canvas.stage-canvas { min-width: 680px; }
+  input[type="range"] { min-height: 36px; }
 }
 ```
 
